@@ -115,6 +115,7 @@ public class GameEngine {
         if (mergedOrMoved) {
             createTile();
         }
+        judgeDeath();
     }
 
     public void doDown() {
@@ -144,6 +145,7 @@ public class GameEngine {
         if (mergedOrMoved) {
             createTile();
         }
+        judgeDeath();
     }
 
     public void doLeft() {
@@ -175,6 +177,7 @@ public class GameEngine {
         if (mergedOrMoved) {
             createTile();
         }
+        judgeDeath();
     }
 
     public void doRight() {
@@ -205,8 +208,36 @@ public class GameEngine {
         if (mergedOrMoved) {
             createTile();
         }
+        judgeDeath();
     }
 
+    /**
+     * 判断死亡
+     */
+    private void judgeDeath(){
+        boolean dead = true;
+        for(int i=0,len = tiles.length;i<len && dead;i++){
+            for(int j=0;j<len && dead;j++){
+                if(tiles[i][j].getValue() != 0){
+                    if(dead && i > 0){
+                        dead = tiles[i-1][j].getValue() != tiles[i][j].getValue();
+                    }
+                    if(dead && i < len-1){
+                        dead = tiles[i+1][j].getValue() != tiles[i][j].getValue();
+                    }
+                    if(dead && j > 0){
+                        dead = tiles[i][j-1].getValue() != tiles[i][j].getValue();
+                    }
+                    if(dead && j < len-1){
+                        dead = tiles[i][j+1].getValue() != tiles[i][j].getValue();
+                    }
+                }else dead = false;
+            }
+        }
+        if(dead){
+            gameView.gameOver();
+        }
+    }
 
     private void swap(Tile from, Tile to) {
         gameView.move(from, to);

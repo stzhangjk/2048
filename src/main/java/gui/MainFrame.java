@@ -24,6 +24,7 @@ public class MainFrame extends JFrame implements IMainView{
     public MainFrame() {
         setSize(800,600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         /*创建配置面板*/
         optionPanel = new JPanel();

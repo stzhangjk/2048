@@ -78,4 +78,9 @@ public class GamePanel extends JPanel implements IGameView{
     public void updateValue(Tile tile) {
         tilePanels[tile.getX()][tile.getY()].updateValue(tile.getValue());
     }
+
+    @Override
+    public void gameOver() {
+        JOptionPane.showMessageDialog(this,"死了！","游戏结束",JOptionPane.WARNING_MESSAGE);
+    }
 }

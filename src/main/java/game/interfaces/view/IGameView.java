@@ -24,4 +24,9 @@ public interface IGameView {
      * 更新一个瓦片的值
      */
     void updateValue(Tile tile);
+
+    /**
+     * 死了
+     */
+    void gameOver();
 }
