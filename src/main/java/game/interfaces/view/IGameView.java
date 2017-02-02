@@ -1,8 +1,8 @@
 package game.interfaces.view;
 
 import entity.Tile;
-
-import java.awt.*;
+import gui.animate.AnimateUnit;
+import java.util.List;
 
 /**
  * Created by STZHANGJK on 2017.1.21.
@@ -14,11 +14,15 @@ public interface IGameView {
     void init(Tile[][] tiles);
 
     /**
-     * 瓦片移动
-     * @param from 从哪
-     * @param to 到哪
+     * 播放移动动画
+     * @param animateUnits
      */
-    void move(Tile from,Tile to);
+    void doMoveAnimate(List<AnimateUnit> animateUnits);
+
+    /**
+     * 合并
+     */
+    void doMergeAnimate(List<AnimateUnit> animateUnits);
 
     /**
      * 更新一个瓦片的值

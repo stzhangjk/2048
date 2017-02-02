@@ -5,13 +5,13 @@ package entity;
  */
 public class Tile {
 
-    private int x;
-    private int y;
+    private int i;
+    private int j;
     private int value;
 
-    public Tile(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Tile(int i, int j) {
+        this.i = i;
+        this.j = j;
     }
 
     public int getValue() {
@@ -22,27 +22,27 @@ public class Tile {
         this.value = value;
     }
 
-    public int getX() {
-        return x;
+    public int getI() {
+        return i;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setI(int i) {
+        this.i = i;
     }
 
-    public int getY() {
-        return y;
+    public int getJ() {
+        return j;
     }
 
-    public void setY(int y) {
-        this.y = y;
+    public void setJ(int j) {
+        this.j = j;
     }
 
     @Override
     public String toString() {
         return "Tile{" +
-                "x=" + x +
-                ", y=" + y +
+                "i=" + i +
+                ", j=" + j +
                 ", value=" + value +
                 '}';
     }

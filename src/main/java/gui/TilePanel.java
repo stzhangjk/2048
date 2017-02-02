@@ -12,6 +12,8 @@ import java.awt.geom.RoundRectangle2D;
  */
 public class TilePanel extends JPanel {
 
+    /**圆角的半径*/
+    public static final int ARC = 20;
     private JLabel value;
     private BoxLayout boxLayout;
     private JPanel middleRow;
@@ -44,6 +46,8 @@ public class TilePanel extends JPanel {
         Color color = ColorSet.getBGColor(value);
         setBackground(color);
         middleRow.setBackground(color);
+
+        validate();
     }
 
     @Override

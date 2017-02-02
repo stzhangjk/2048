@@ -3,8 +3,11 @@ package game;
 import entity.Tile;
 import game.interfaces.view.IGameView;
 import game.interfaces.view.IMainView;
-import gui.GamePanel;
+import gui.GameContext;
+import gui.animate.AnimateUnit;
 
+import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -20,13 +23,19 @@ public class GameEngine {
      */
     private IGameView gameView;
     /**
+     * 移动动作单元列表
+     */
+    private List<AnimateUnit> moveAnimateUnits;
+    /**
+     * 合并动作单元列表
+     */
+    private List<AnimateUnit> mergeAnimateUnits;
+    /**
      * 主界面
      */
     private IMainView mainView;
-
-    public GameEngine(IMainView mainView) {
-        this.mainView = mainView;
-    }
+    private boolean isMove;
+    private boolean isMerged;
 
     /**
      * 初始化瓦片
@@ -46,21 +55,21 @@ public class GameEngine {
      * 初始化游戏
      */
     private void initGame() {
-        initTiles(mainView.getMapSize());
-        gameView = mainView.getGameView();
+        moveAnimateUnits = new ArrayList<>();
+        mergeAnimateUnits = new ArrayList<>();
+        initTiles(4);
         gameView.init(tiles);
         /*生成两个2*/
         createTile();
         createTile();
-
     }
 
     /**
      * 开始游戏
      */
     public void start() {
+        gameView = GameContext.getGameView();
         initGame();
-        mainView.gotoGameView();
     }
 
     /**
@@ -88,8 +97,9 @@ public class GameEngine {
         return tiles;
     }
 
-    public void doUp() {
-        boolean mergedOrMoved = false;
+    public synchronized void doUp() {
+        isMove = false;
+        isMerged = false;
         for (int j = 0, len = tiles.length; j < len; j++) {
             int lastMergeX = -1;    //必须一排一排遍历才有用,不需要记纵轴
             for (int from = 1; from < len; from++) {
@@ -100,26 +110,33 @@ public class GameEngine {
                         k--;
                     }
                     if (k != from) {
-                        swap(tiles[from][j], tiles[k][j]);
-                        mergedOrMoved = true;
-                    }
-
-                    if (k > 0 && lastMergeX != k - 1 && tiles[k][j].getValue() == tiles[k - 1][j].getValue()) {
-                        merge(tiles[k][j], tiles[k - 1][j]);
-                        mergedOrMoved = true;
-                        lastMergeX = k - 1;
+                        if (k > 0 && lastMergeX != k - 1 && tiles[from][j].getValue() == tiles[k - 1][j].getValue()) {
+                            move(tiles[from][j], tiles[k - 1][j]);
+                            merge(tiles[from][j], tiles[k - 1][j]);
+                            isMerged = true;
+                            lastMergeX = k - 1;
+                        }else{
+                            move(tiles[from][j], tiles[k][j]);
+                            isMove = true;
+                        }
+                    }else{
+                        if (k > 0 && lastMergeX != k - 1 && tiles[from][j].getValue() == tiles[k - 1][j].getValue()) {
+                            move(tiles[from][j], tiles[k - 1][j]);
+                            merge(tiles[from][j], tiles[k - 1][j]);
+                            isMerged = true;
+                            lastMergeX = k - 1;
+                        }
                     }
                 }
             }
         }
-        if (mergedOrMoved) {
-            createTile();
-        }
-        judgeDeath();
+        /*处理数据*/
+        playAnimate();
     }
 
-    public void doDown() {
-        boolean mergedOrMoved = false;
+    public synchronized void doDown() {
+        isMove = false;
+        isMerged = false;
         for (int j = 0, len = tiles.length; j < len; j++) {
             int lastMergeX = -1;
             for (int from = len - 2; from >= 0; from--) {
@@ -130,26 +147,35 @@ public class GameEngine {
                         k++;
                     }
                     if (k != from) {
-                        swap(tiles[from][j], tiles[k][j]);
-                        mergedOrMoved = true;
+                        if (k < len - 1 && lastMergeX != k + 1 && tiles[from][j].getValue() == tiles[k + 1][j].getValue()) {
+                            move(tiles[from][j], tiles[k + 1][j]);
+                            merge(tiles[from][j], tiles[k + 1][j]);
+                            isMerged = true;
+                            lastMergeX = k + 1;
+                        }else{
+                            move(tiles[from][j], tiles[k][j]);
+                            isMove = true;
+                        }
+                    }else{
+                        if (k < len - 1 && lastMergeX != k + 1 && tiles[from][j].getValue() == tiles[k + 1][j].getValue()) {
+                            move(tiles[from][j], tiles[k + 1][j]);
+                            merge(tiles[from][j], tiles[k + 1][j]);
+                            isMerged = true;
+                            lastMergeX = k + 1;
+                        }
                     }
 
-                    if (k < len - 1 && lastMergeX != k + 1 && tiles[k][j].getValue() == tiles[k + 1][j].getValue()) {
-                        merge(tiles[k][j], tiles[k + 1][j]);
-                        mergedOrMoved = true;
-                        lastMergeX = k + 1;
-                    }
+
                 }
             }
         }
-        if (mergedOrMoved) {
-            createTile();
-        }
-        judgeDeath();
+        /*处理数据*/
+        playAnimate();
     }
 
-    public void doLeft() {
-        boolean mergedOrMoved = false;
+    public synchronized void doLeft() {
+        isMove = false;
+        isMerged = false;
         for (int i = 0, len = tiles.length; i < len; i++) {
             int lastMergeY = -1;
             for (int from = 1; from < len; from++) {
@@ -160,28 +186,33 @@ public class GameEngine {
                         k--;
                     }
                     if (k != from) {
-                        swap(tiles[i][from], tiles[i][k]);
-                        mergedOrMoved = true;
-                    }
-
-                    if (k > 0 && lastMergeY != k - 1 && tiles[i][k].getValue() == tiles[i][k - 1].getValue()) {
-                        merge(tiles[i][k], tiles[i][k - 1]);
-                        mergedOrMoved = true;
-
-                        lastMergeY = k - 1;
-
+                        if (k > 0 && lastMergeY != k - 1 && tiles[i][from].getValue() == tiles[i][k - 1].getValue()) {
+                            move(tiles[i][from], tiles[i][k - 1]);
+                            merge(tiles[i][from], tiles[i][k - 1]);
+                            isMerged = true;
+                            lastMergeY = k - 1;
+                        }else {
+                            move(tiles[i][from], tiles[i][k]);
+                            isMove = true;
+                        }
+                    }else {
+                        if (k > 0 && lastMergeY != k - 1 && tiles[i][from].getValue() == tiles[i][k - 1].getValue()) {
+                            move(tiles[i][from], tiles[i][k - 1]);
+                            merge(tiles[i][from], tiles[i][k - 1]);
+                            isMerged = true;
+                            lastMergeY = k - 1;
+                        }
                     }
                 }
             }
         }
-        if (mergedOrMoved) {
-            createTile();
-        }
-        judgeDeath();
+        /*处理数据*/
+        playAnimate();
     }
 
-    public void doRight() {
-        boolean mergedOrMoved = false;
+    public synchronized void doRight() {
+        isMove = false;
+        isMerged = false;
         for (int i = 0, len = tiles.length; i < len; i++) {
 
             int lastMergeY = -1;
@@ -193,22 +224,65 @@ public class GameEngine {
                         k++;
                     }
                     if (k != from) {
-                        swap(tiles[i][from], tiles[i][k]);
-                        mergedOrMoved = true;
-                    }
-
-                    if (k < len-1 && lastMergeY != k + 1 && tiles[i][k].getValue() == tiles[i][k + 1].getValue()) {
-                        merge(tiles[i][k], tiles[i][k + 1]);
-                        mergedOrMoved = true;
-                        lastMergeY = k + 1;
+                        if (k < len-1 && lastMergeY != k + 1 && tiles[i][from].getValue() == tiles[i][k + 1].getValue()) {
+                            move(tiles[i][from], tiles[i][k + 1]);
+                            merge(tiles[i][from], tiles[i][k + 1]);
+                            isMerged = true;
+                            lastMergeY = k + 1;
+                        }else {
+                            move(tiles[i][from], tiles[i][k]);
+                            isMove = true;
+                        }
+                    }else {
+                        if (k < len-1 && lastMergeY != k + 1 && tiles[i][from].getValue() == tiles[i][k + 1].getValue()) {
+                            move(tiles[i][from], tiles[i][k + 1]);
+                            merge(tiles[i][from], tiles[i][k + 1]);
+                            isMerged = true;
+                            lastMergeY = k + 1;
+                        }
                     }
                 }
             }
         }
-        if (mergedOrMoved) {
-            createTile();
+        /*处理数据*/
+        playAnimate();
+    }
+
+    private void playAnimate(){
+        try {
+             /*处理数据*/
+            if(isMove || isMerged){
+                SwingUtilities.invokeAndWait(()->{
+                    gameView.doMoveAnimate(moveAnimateUnits);
+                    for(AnimateUnit unit : moveAnimateUnits){
+                        Tile from = unit.getFrom();
+                        Tile to = unit.getTo();
+                        to.setValue(from.getValue());
+                        from.setValue(0);
+                        gameView.updateValue(from);
+                        gameView.updateValue(to);
+                    }
+                    moveAnimateUnits.clear();
+                });
+            }
+
+            if(isMerged){
+                SwingUtilities.invokeAndWait(()->{
+                    gameView.doMergeAnimate(mergeAnimateUnits);
+                    mergeAnimateUnits.clear();
+                });
+            }
+
+            if (isMerged || isMove) {
+                createTile();
+            }
+            judgeDeath();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
-        judgeDeath();
     }
 
     /**
@@ -239,11 +313,15 @@ public class GameEngine {
         }
     }
 
-    private void swap(Tile from, Tile to) {
-        gameView.move(from, to);
-        int temp = from.getValue();
-        from.setValue(to.getValue());
-        to.setValue(temp);
+    /**
+     * 移动
+     * @param from
+     * @param to
+     */
+    private void move(Tile from, Tile to) {
+        moveAnimateUnits.add(createUnit(from, to));
+        to.setValue(from.getValue());
+        from.setValue(0);
     }
 
     /**
@@ -253,12 +331,18 @@ public class GameEngine {
      * @param to
      */
     private void merge(Tile from, Tile to) {
+        mergeAnimateUnits.add(createUnit(from, to));
         to.setValue(to.getValue() << 1);
         from.setValue(0);
-        gameView.updateValue(from);
-        gameView.updateValue(to);
     }
 
+    private AnimateUnit createUnit(Tile from, Tile to){
+        Tile f = new Tile(from.getI(),from.getJ());
+        f.setValue(from.getValue());
+        Tile t = new Tile(to.getI(),to.getJ());
+        t.setValue(to.getValue());
+        return new AnimateUnit(f,t);
+    }
 
     /**
      * 打印瓦片的值和坐标，debug用

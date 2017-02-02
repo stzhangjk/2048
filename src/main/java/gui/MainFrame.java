@@ -3,67 +3,54 @@ package gui;
 import game.GameEngine;
 import game.interfaces.view.IGameView;
 import game.interfaces.view.IMainView;
+import game.interfaces.view.IMenuView;
+import game.interfaces.view.IOptionView;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 
 /**
  * Created by STZHANGJK on 2016.11.24.
  */
-public class MainFrame extends JFrame implements IMainView{
+public class MainFrame extends JFrame{
 
-    private JPanel optionPanel;
-    private GamePanel gamePanel;
-    private JButton start;
+    public static String MENU_PANEL_NAME = "menu";
+    public static String OPTION_PANEL_NAME = "option";
+    public static String PLAY_PANEL_NAME = "play";
+
+
+    private MenuPanel menuPanel;
+    private OptionPanel optionPanel;
+    private PlayPanel playPanel;
     private CardLayout cardLayout;
-    private GameEngine engine;
 
     public MainFrame() {
         setSize(800,600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        /*创建菜单面板*/
+        menuPanel = new MenuPanel();
         /*创建配置面板*/
-        optionPanel = new JPanel();
-        optionPanel.setLayout(new FlowLayout());
-        start = new JButton("开始");
-        start.addActionListener(e-> {
-            /*创建游戏面板*/
-            engine = new GameEngine(MainFrame.this);
-            gamePanel = new GamePanel(engine);
-            MainFrame.this.getContentPane().add(gamePanel);
-            engine.start();
-        });
-
-        optionPanel.add(start);
+        optionPanel = new OptionPanel();
+        GameEngine engine = new GameEngine();
+        GameContext.setEngine(engine);
+        /*创建游戏面板*/
+        playPanel = new PlayPanel();
 
         /*设置卡片布局*/
         cardLayout = new CardLayout();
         getContentPane().setLayout(cardLayout);
-        getContentPane().add(optionPanel);
 
-        engine = new GameEngine(MainFrame.this);
-        gamePanel = new GamePanel(engine);
-        MainFrame.this.getContentPane().add(gamePanel);
-        engine.start();
-        System.out.println("main init");
+        getContentPane().add(menuPanel,MENU_PANEL_NAME);
+        getContentPane().add(optionPanel,OPTION_PANEL_NAME);
+        getContentPane().add(playPanel,PLAY_PANEL_NAME);
+
+        GameContext.setMainFrame(this);
     }
 
-    @Override
-    public void gotoGameView() {
-        cardLayout.next(getContentPane());
-    }
-
-    @Override
-    public int getMapSize() {
-        return 4;
-    }
-
-    @Override
-    public IGameView getGameView() {
-        return gamePanel;
+    public void showView(String name){
+        cardLayout.show(getContentPane(),name);
     }
 }
