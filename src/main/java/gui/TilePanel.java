@@ -46,12 +46,12 @@ public class TilePanel extends JPanel {
         Color color = ColorSet.getBGColor(value);
         setBackground(color);
         middleRow.setBackground(color);
-
-        validate();
     }
 
     @Override
     public void paint(Graphics g) {
+        g.setColor(ColorSet.BACKGROUND);
+        g.fillRect(0,0,getWidth(),getHeight());
         RoundRectangle2D.Double rect = new RoundRectangle2D.Double(0,0,getWidth(),getHeight(),20,20);
         g.setClip(rect);
         super.paint(g);

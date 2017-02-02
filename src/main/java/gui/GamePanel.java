@@ -94,6 +94,7 @@ public class GamePanel extends JPanel implements IGameView{
                 tilePanels[i][j].setSize(width,height);
                 tilePanels[i][j].setLocation(GAP*(j+1)+width*j,GAP*(i+1)+height*i);
                 this.add(tilePanels[i][j]);
+                tilePanels[i][j].validate();
             }
         }
     }
@@ -147,8 +148,6 @@ public class GamePanel extends JPanel implements IGameView{
     public void updateValue(Tile tile) {
         tilePanels[tile.getI()][tile.getJ()].updateValue(tile.getValue());
     }
-
-
 
     @Override
     public void gameOver() {
