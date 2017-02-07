@@ -3,8 +3,10 @@ package gui;
 import game.GameEngine;
 import gui.playPanel.PlayPanel;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 
 /**
@@ -44,6 +46,8 @@ public class MainFrame extends JFrame{
         getContentPane().add(playPanel,PLAY_PANEL_NAME);
 
         GameContext.setMainFrame(this);
+
+
     }
 
     public void showView(String name){

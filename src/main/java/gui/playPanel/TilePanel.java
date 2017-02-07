@@ -47,11 +47,11 @@ public class TilePanel extends JPanel {
     }
 
     @Override
-    public void paint(Graphics g) {
+    protected void paintComponent(Graphics g) {
         g.setColor(ColorSet.BACKGROUND);
         g.fillRect(0,0,getWidth(),getHeight());
         RoundRectangle2D.Double rect = new RoundRectangle2D.Double(0,0,getWidth(),getHeight(),20,20);
         g.setClip(rect);
-        super.paint(g);
+        super.paintComponent(g);
     }
 }

@@ -14,7 +14,6 @@ import java.awt.geom.RoundRectangle2D;
  */
 public class InfoPanel extends JPanel{
 
-
     private JPanel upPanel;
     private JPanel downPanel;
     private ScorePanel cur;
@@ -125,12 +124,12 @@ public class InfoPanel extends JPanel{
         }
 
         @Override
-        public void paint(Graphics g) {
+        protected void paintComponent(Graphics g) {
             g.setColor(ColorSet.MENU_BACKGROUND);
             g.fillRect(0,0,getWidth(),getHeight());
             RoundRectangle2D.Double rect = new RoundRectangle2D.Double(0,0,getWidth(),getHeight(),20,20);
             g.setClip(rect);
-            super.paint(g);
+            super.paintComponent(g);
         }
 
         /**
@@ -148,7 +147,9 @@ public class InfoPanel extends JPanel{
 
         CtlButton(String text) {
             super(text);
-            setBackground(ColorSet.BACKGROUND);
+            setBorderPainted(false);
+            setContentAreaFilled(false);
+            setMargin(new Insets(0,0,0,0));
             setFont(new Font("微软雅黑",Font.PLAIN,15));
         }
     }
