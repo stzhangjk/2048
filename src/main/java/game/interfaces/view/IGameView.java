@@ -33,4 +33,5 @@ public interface IGameView {
      * 死了
      */
     void gameOver();
+
 }

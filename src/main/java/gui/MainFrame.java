@@ -1,10 +1,7 @@
 package gui;
 
 import game.GameEngine;
-import game.interfaces.view.IGameView;
-import game.interfaces.view.IMainView;
-import game.interfaces.view.IMenuView;
-import game.interfaces.view.IOptionView;
+import gui.playPanel.PlayPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +23,7 @@ public class MainFrame extends JFrame{
     private CardLayout cardLayout;
 
     public MainFrame() {
-        setSize(800,600);
+        setSize(600,700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -38,7 +35,6 @@ public class MainFrame extends JFrame{
         GameContext.setEngine(engine);
         /*创建游戏面板*/
         playPanel = new PlayPanel();
-
         /*设置卡片布局*/
         cardLayout = new CardLayout();
         getContentPane().setLayout(cardLayout);

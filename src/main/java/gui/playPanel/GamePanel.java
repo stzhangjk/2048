@@ -1,14 +1,16 @@
-package gui;
+package gui.playPanel;
 
 import entity.Tile;
 import game.GameEngine;
 import game.interfaces.view.IGameView;
+import gui.GameContext;
 import gui.animate.MergeAnimate;
 import gui.animate.MoveAnimate;
 import gui.animate.AnimateUnit;
 import util.ColorSet;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -84,6 +86,7 @@ public class GamePanel extends JPanel implements IGameView{
 
     @Override
     public void init(Tile[][] tiles) {
+        removeAll();
         tilePanels = new TilePanel[tiles.length][tiles.length];
         int width = (getWidth()-(2+tiles.length-1)*GAP)/tiles.length;
         int height = (getHeight()-(2+tiles.length-1)*GAP)/tiles.length;

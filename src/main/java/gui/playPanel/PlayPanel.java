@@ -1,4 +1,6 @@
-package gui;
+package gui.playPanel;
+
+import gui.GameContext;
 
 import javax.swing.*;
 import java.awt.*;

@@ -10,6 +10,7 @@ import java.util.Map;
  * Created by STZHANGJK on 2017.1.21.
  */
 public class ColorSet {
+    public static final Color MENU_BACKGROUND = new Color(0xfaf8ef);
     public static final Color BACKGROUND = new Color(187,173,160);
 
     private static final Map<Integer,Color> textColorMap;

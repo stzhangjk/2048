@@ -2,7 +2,7 @@ package game;
 
 import entity.Tile;
 import game.interfaces.view.IGameView;
-import game.interfaces.view.IMainView;
+import game.interfaces.view.IScoreView;
 import gui.GameContext;
 import gui.animate.AnimateUnit;
 
@@ -22,6 +22,8 @@ public class GameEngine {
      * 游戏界面
      */
     private IGameView gameView;
+    /**分数显示界面*/
+    private IScoreView scoreView;
     /**
      * 移动动作单元列表
      */
@@ -30,12 +32,10 @@ public class GameEngine {
      * 合并动作单元列表
      */
     private List<AnimateUnit> mergeAnimateUnits;
-    /**
-     * 主界面
-     */
-    private IMainView mainView;
     private boolean isMove;
     private boolean isMerged;
+    /**分数*/
+    private int score;
 
     /**
      * 初始化瓦片
@@ -62,6 +62,9 @@ public class GameEngine {
         /*生成两个2*/
         createTile();
         createTile();
+        /*分数置0*/
+        score = 0;
+        scoreView.setScore(score);
     }
 
     /**
@@ -69,6 +72,14 @@ public class GameEngine {
      */
     public void start() {
         gameView = GameContext.getGameView();
+        scoreView = GameContext.getScoreView();
+        initGame();
+    }
+
+    /**
+     * 重新开始
+     */
+    public void restart(){
         initGame();
     }
 
@@ -130,7 +141,7 @@ public class GameEngine {
                 }
             }
         }
-        /*处理数据*/
+     /*处理数据并播放动画*/
         playAnimate();
     }
 
@@ -169,7 +180,7 @@ public class GameEngine {
                 }
             }
         }
-        /*处理数据*/
+         /*处理数据并播放动画*/
         playAnimate();
     }
 
@@ -206,7 +217,7 @@ public class GameEngine {
                 }
             }
         }
-        /*处理数据*/
+       /*处理数据并播放动画*/
         playAnimate();
     }
 
@@ -244,7 +255,7 @@ public class GameEngine {
                 }
             }
         }
-        /*处理数据*/
+        /*处理数据并播放动画*/
         playAnimate();
     }
 
@@ -269,6 +280,8 @@ public class GameEngine {
             if(isMerged){
                 SwingUtilities.invokeAndWait(()->{
                     gameView.doMergeAnimate(mergeAnimateUnits);
+                    score += mergeAnimateUnits.size();
+                    scoreView.setScore(score);
                     mergeAnimateUnits.clear();
                 });
             }

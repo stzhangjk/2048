@@ -2,6 +2,8 @@ package gui;
 
 import game.GameEngine;
 import game.interfaces.view.IGameView;
+import game.interfaces.view.IScoreView;
+import gui.playPanel.PlayPanel;
 
 /**
  * Created by STZHANGJK on 2017.1.26.
@@ -11,6 +13,7 @@ public class GameContext {
     private static MenuPanel menuPanel;
     private static OptionPanel optionPanel;
     private static IGameView gameView;
+    private static IScoreView scoreView;
     private static GameEngine engine;
 
     public static MainFrame getMainFrame() {
@@ -51,5 +54,13 @@ public class GameContext {
 
     public static void setEngine(GameEngine engine) {
         GameContext.engine = engine;
+    }
+
+    public static IScoreView getScoreView() {
+        return scoreView;
+    }
+
+    public static void setScoreView(IScoreView scoreView) {
+        GameContext.scoreView = scoreView;
     }
 }

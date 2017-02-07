@@ -1,6 +1,8 @@
 package gui;
 
 import game.interfaces.view.IMenuView;
+import gui.playPanel.GamePanel;
+
 import javax.swing.*;
 
 /**
@@ -15,9 +17,13 @@ public class MenuPanel extends JPanel implements IMenuView{
     public MenuPanel() {
         singlePlay = new JButton("单机游戏");
         singlePlay.addActionListener(e->{
-            GameContext.getEngine().start();
-            GameContext.getMainFrame().showView(MainFrame.PLAY_PANEL_NAME);
-            ((GamePanel)GameContext.getGameView()).requestFocus();
+            new Thread(()->{
+                SwingUtilities.invokeLater(()->{
+                    GameContext.getEngine().start();
+                    GameContext.getMainFrame().showView(MainFrame.PLAY_PANEL_NAME);
+                    ((GamePanel)GameContext.getGameView()).requestFocus();
+                });
+            }).start();
         });
         multiPlay = new JButton("双人联机");
         option = new JButton("设置");

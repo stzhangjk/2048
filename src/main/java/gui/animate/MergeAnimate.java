@@ -1,8 +1,8 @@
 package gui.animate;
 
 import entity.Tile;
-import gui.GamePanel;
-import gui.TilePanel;
+import gui.playPanel.GamePanel;
+import gui.playPanel.TilePanel;
 import java.util.List;
 
 /**

@@ -1,4 +1,4 @@
-package gui;
+package gui.playPanel;
 
 import util.ColorSet;
 
@@ -35,9 +35,7 @@ public class TilePanel extends JPanel {
         add(middleRow);
         add(Box.createVerticalGlue());
 
-        value.setForeground(ColorSet.getTextColor(v));
-        setBackground(ColorSet.getBGColor(v));
-        middleRow.setBackground(ColorSet.getBGColor(v));
+        updateValue(v);
     }
 
     public void updateValue(int value){
