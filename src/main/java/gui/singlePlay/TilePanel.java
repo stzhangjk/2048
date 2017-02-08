@@ -1,4 +1,4 @@
-package gui.singlePlayPanel;
+package gui.singlePlay;
 
 import util.ColorSet;
 

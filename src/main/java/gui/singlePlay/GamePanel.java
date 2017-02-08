@@ -1,4 +1,4 @@
-package gui.singlePlayPanel;
+package gui.singlePlay;
 
 import entity.Tile;
 import game.GameEngine;

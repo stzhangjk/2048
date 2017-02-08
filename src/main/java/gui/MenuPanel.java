@@ -2,8 +2,8 @@ package gui;
 
 import game.GameEngine;
 import game.interfaces.view.IMenuView;
-import gui.singlePlayPanel.GamePanel;
-import gui.singlePlayPanel.SinglePlayPanel;
+import gui.singlePlay.GamePanel;
+import gui.singlePlay.SinglePlayPanel;
 import util.ColorSet;
 
 import javax.imageio.ImageIO;

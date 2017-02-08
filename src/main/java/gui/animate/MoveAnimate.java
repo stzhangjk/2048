@@ -1,8 +1,8 @@
 package gui.animate;
 
 import entity.Tile;
-import gui.singlePlayPanel.GamePanel;
-import gui.singlePlayPanel.TilePanel;
+import gui.singlePlay.GamePanel;
+import gui.singlePlay.TilePanel;
 import util.ColorSet;
 import java.awt.*;
 import java.awt.image.BufferedImage;

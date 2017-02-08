@@ -1,9 +1,5 @@
 package gui;
 
-import game.GameEngine;
-import game.interfaces.view.IGameView;
-import game.interfaces.view.IControlView;
-
 /**
  * Created by STZHANGJK on 2017.1.26.
  */
