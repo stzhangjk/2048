@@ -1,6 +1,7 @@
 package game.interfaces.view;
 
 import entity.Tile;
+import game.GameEngine;
 import gui.animate.AnimateUnit;
 import java.util.List;
 
@@ -33,5 +34,10 @@ public interface IGameView {
      * 死了
      */
     void gameOver();
+
+    /**
+     * 注入游戏引擎
+     */
+    void setEngine(GameEngine engine);
 
 }

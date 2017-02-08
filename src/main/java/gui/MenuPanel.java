@@ -1,15 +1,15 @@
 package gui;
 
+import game.GameEngine;
 import game.interfaces.view.IMenuView;
-import gui.playPanel.GamePanel;
+import gui.singlePlayPanel.GamePanel;
+import gui.singlePlayPanel.SinglePlayPanel;
 import util.ColorSet;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -30,7 +30,8 @@ public class MenuPanel extends JPanel implements IMenuView{
         title.setFont(new Font("微软雅黑",Font.PLAIN,60));
         title.setForeground(ColorSet.getTextColor(4));
         Box titleBox = Box.createHorizontalBox();
-        titleBox.add(Box.createHorizontalStrut(10));
+        titleBox.add(Box.createHorizontalGlue());
+        //titleBox.add(Box.createHorizontalStrut(10));
         titleBox.add(title);
         titleBox.add(Box.createHorizontalGlue());
 
@@ -38,20 +39,27 @@ public class MenuPanel extends JPanel implements IMenuView{
         singlePlay.addActionListener(e->{
             new Thread(()->{
                 SwingUtilities.invokeLater(()->{
-                    GameContext.getEngine().start();
-                    GameContext.getMainFrame().showView(MainFrame.PLAY_PANEL_NAME);
-                    ((GamePanel)GameContext.getGameView()).requestFocus();
+                    SinglePlayPanel playPanel = new SinglePlayPanel();
+                    GamePanel gamePanel = playPanel.getGamePanel();
+                    GameEngine engine = new GameEngine(gamePanel,playPanel.getInfoPanel());
+                    engine.start();
+                    MainFrame frame = GameContext.getMainFrame();
+                    frame.getContentPane().add(playPanel,MainFrame.SINGLE_PLAY_PANEL_NAME);
+                    frame.showView(MainFrame.SINGLE_PLAY_PANEL_NAME);
+                    gamePanel.requestFocus();
                 });
             }).start();
         });
         Box singleBox = Box.createHorizontalBox();
-        singleBox.add(Box.createHorizontalStrut(10));
+        singleBox.add(Box.createHorizontalGlue());
+        //singleBox.add(Box.createHorizontalStrut(10));
         singleBox.add(singlePlay);
         singleBox.add(Box.createHorizontalGlue());
 
         multiPlay = new MenuButton("双人联机");
         Box multiBox = Box.createHorizontalBox();
-        multiBox.add(Box.createHorizontalStrut(10));
+        multiBox.add(Box.createHorizontalGlue());
+        //multiBox.add(Box.createHorizontalStrut(10));
         multiBox.add(multiPlay);
         multiBox.add(Box.createHorizontalGlue());
 
@@ -60,7 +68,8 @@ public class MenuPanel extends JPanel implements IMenuView{
             SwingUtilities.invokeLater(()->GameContext.getMainFrame().showView(MainFrame.OPTION_PANEL_NAME));
         });
         Box optionBox = Box.createHorizontalBox();
-        optionBox.add(Box.createHorizontalStrut(10));
+        optionBox.add(Box.createHorizontalGlue());
+        //optionBox.add(Box.createHorizontalStrut(10));
         optionBox.add(option);
         optionBox.add(Box.createHorizontalGlue());
 
@@ -77,8 +86,6 @@ public class MenuPanel extends JPanel implements IMenuView{
         add(optionBox);
         add(Box.createVerticalGlue());
 
-        GameContext.setMenuPanel(this);
-
         setBackground(ColorSet.MENU_BACKGROUND);
         try{
             bg = ImageIO.read(ClassLoader.getSystemResourceAsStream("BG.png"));
@@ -94,7 +101,7 @@ public class MenuPanel extends JPanel implements IMenuView{
     }
 
     private class MenuButton extends JButton{
-        public MenuButton(String text) {
+        MenuButton(String text) {
             super(text);
             setFont(new Font("微软雅黑",Font.PLAIN,28));
             setUI(new BasicButtonUI());

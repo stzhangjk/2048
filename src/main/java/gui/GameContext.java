@@ -2,8 +2,7 @@ package gui;
 
 import game.GameEngine;
 import game.interfaces.view.IGameView;
-import game.interfaces.view.IScoreView;
-import gui.playPanel.PlayPanel;
+import game.interfaces.view.IControlView;
 
 /**
  * Created by STZHANGJK on 2017.1.26.
@@ -11,10 +10,6 @@ import gui.playPanel.PlayPanel;
 public class GameContext {
     private static MainFrame mainFrame;
     private static MenuPanel menuPanel;
-    private static OptionPanel optionPanel;
-    private static IGameView gameView;
-    private static IScoreView scoreView;
-    private static GameEngine engine;
 
     public static MainFrame getMainFrame() {
         return mainFrame;
@@ -22,45 +17,5 @@ public class GameContext {
 
     public static void setMainFrame(MainFrame mainFrame) {
         GameContext.mainFrame = mainFrame;
-    }
-
-    public static MenuPanel getMenuPanel() {
-        return menuPanel;
-    }
-
-    public static void setMenuPanel(MenuPanel menuPanel) {
-        GameContext.menuPanel = menuPanel;
-    }
-
-    public static OptionPanel getOptionPanel() {
-        return optionPanel;
-    }
-
-    public static void setOptionPanel(OptionPanel optionPanel) {
-        GameContext.optionPanel = optionPanel;
-    }
-
-    public static IGameView getGameView() {
-        return gameView;
-    }
-
-    public static void setGamePanel(IGameView gameView) {
-        GameContext.gameView = gameView;
-    }
-
-    public static GameEngine getEngine() {
-        return engine;
-    }
-
-    public static void setEngine(GameEngine engine) {
-        GameContext.engine = engine;
-    }
-
-    public static IScoreView getScoreView() {
-        return scoreView;
-    }
-
-    public static void setScoreView(IScoreView scoreView) {
-        GameContext.scoreView = scoreView;
     }
 }

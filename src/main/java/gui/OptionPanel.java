@@ -14,7 +14,5 @@ public class OptionPanel extends JPanel {
     public OptionPanel() {
         start = new JButton("设置界面test");
         add(start);
-
-        GameContext.setOptionPanel(this);
     }
 }

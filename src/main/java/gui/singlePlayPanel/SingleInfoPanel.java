@@ -1,6 +1,7 @@
-package gui.playPanel;
+package gui.singlePlayPanel;
 
-import game.interfaces.view.IScoreView;
+import game.GameEngine;
+import game.interfaces.view.IControlView;
 import gui.GameContext;
 import gui.MainFrame;
 import util.ColorSet;
@@ -12,14 +13,17 @@ import java.awt.geom.RoundRectangle2D;
 /**
  * Created by STZHANGJK on 2017.1.25.
  */
-public class InfoPanel extends JPanel{
+public class SingleInfoPanel extends JPanel implements IControlView{
 
     private JPanel upPanel;
     private JPanel downPanel;
+    private GamePanel gamePanel;
     private ScorePanel cur;
     private ScorePanel best;
+    private GameEngine engine;
 
-    public InfoPanel() {
+    public SingleInfoPanel(GamePanel gamePanel) {
+        this.gamePanel = gamePanel;
         setBackground(ColorSet.MENU_BACKGROUND);
 
         //-------------//
@@ -32,7 +36,6 @@ public class InfoPanel extends JPanel{
         titleLbl.setForeground(new Color(0x776E64));
         //分数
         cur = new ScorePanel("SCORE","0");
-        GameContext.setScoreView(cur);
         best = new ScorePanel("BEST","0");
         /**/
         upPanel.setLayout(new BoxLayout(upPanel,BoxLayout.X_AXIS));
@@ -59,9 +62,9 @@ public class InfoPanel extends JPanel{
         });
         JButton restart = new CtlButton("重新开始");
         restart.addActionListener(e->{
-            GameContext.getEngine().restart();
-            ((JPanel)GameContext.getGameView()).repaint();
-            ((JPanel)GameContext.getGameView()).requestFocus();
+            engine.restart();
+            SingleInfoPanel.this.gamePanel.repaint();
+            SingleInfoPanel.this.gamePanel.requestFocus();
         });
         downPanel.setLayout(new BoxLayout(downPanel,BoxLayout.X_AXIS));
         downPanel.add(Box.createHorizontalStrut(10));
@@ -85,7 +88,27 @@ public class InfoPanel extends JPanel{
         add(Box.createVerticalStrut(10));
     }
 
-    private class ScorePanel extends JPanel implements IScoreView{
+    /**
+     * 设置分数
+     *
+     * @param score
+     */
+    @Override
+    public void setScore(int score) {
+        cur.score.setText(String.valueOf(score));
+    }
+
+    /**
+     * 注入引擎
+     *
+     * @param engine
+     */
+    @Override
+    public void setEngine(GameEngine engine) {
+        this.engine = engine;
+    }
+
+    private class ScorePanel extends JPanel {
         private JLabel title;
         private JLabel score;
 
@@ -131,20 +154,9 @@ public class InfoPanel extends JPanel{
             g.setClip(rect);
             super.paintComponent(g);
         }
-
-        /**
-         * 设置分数
-         *
-         * @param score
-         */
-        @Override
-        public void setScore(int score) {
-            this.score.setText(String.valueOf(score));
-        }
     }
 
     private class CtlButton extends JButton{
-
         CtlButton(String text) {
             super(text);
             setBorderPainted(false);

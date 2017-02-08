@@ -2,8 +2,7 @@ package game;
 
 import entity.Tile;
 import game.interfaces.view.IGameView;
-import game.interfaces.view.IScoreView;
-import gui.GameContext;
+import game.interfaces.view.IControlView;
 import gui.animate.AnimateUnit;
 
 import javax.swing.*;
@@ -22,8 +21,8 @@ public class GameEngine {
      * 游戏界面
      */
     private IGameView gameView;
-    /**分数显示界面*/
-    private IScoreView scoreView;
+    /**控制界面界面*/
+    private IControlView controlView;
     /**
      * 移动动作单元列表
      */
@@ -36,6 +35,13 @@ public class GameEngine {
     private boolean isMerged;
     /**分数*/
     private int score;
+
+    public GameEngine(IGameView gameView, IControlView controlView) {
+        this.gameView = gameView;
+        this.controlView = controlView;
+        gameView.setEngine(this);
+        controlView.setEngine(this);
+    }
 
     /**
      * 初始化瓦片
@@ -64,15 +70,15 @@ public class GameEngine {
         createTile();
         /*分数置0*/
         score = 0;
-        scoreView.setScore(score);
+        controlView.setScore(score);
     }
 
     /**
      * 开始游戏
      */
     public void start() {
-        gameView = GameContext.getGameView();
-        scoreView = GameContext.getScoreView();
+//        gameView = GameContext.getGameView();
+//        controlView = GameContext.getScoreView();
         initGame();
     }
 
@@ -281,7 +287,7 @@ public class GameEngine {
                 SwingUtilities.invokeAndWait(()->{
                     gameView.doMergeAnimate(mergeAnimateUnits);
                     score += mergeAnimateUnits.size();
-                    scoreView.setScore(score);
+                    controlView.setScore(score);
                     mergeAnimateUnits.clear();
                 });
             }

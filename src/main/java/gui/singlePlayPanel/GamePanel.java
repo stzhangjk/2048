@@ -1,16 +1,14 @@
-package gui.playPanel;
+package gui.singlePlayPanel;
 
 import entity.Tile;
 import game.GameEngine;
 import game.interfaces.view.IGameView;
-import gui.GameContext;
 import gui.animate.MergeAnimate;
 import gui.animate.MoveAnimate;
 import gui.animate.AnimateUnit;
 import util.ColorSet;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -27,7 +25,6 @@ public class GamePanel extends JPanel implements IGameView{
     private final int GAP = 10;
 
     public GamePanel() {
-        this.engine = GameContext.getEngine();
         setBackground(ColorSet.BACKGROUND);
 
         addComponentListener(new ComponentListener() {
@@ -163,5 +160,15 @@ public class GamePanel extends JPanel implements IGameView{
 
     public TilePanel[][] getTilePanels() {
         return tilePanels;
+    }
+
+    /**
+     * 注入游戏引擎
+     *
+     * @param engine
+     */
+    @Override
+    public void setEngine(GameEngine engine) {
+        this.engine = engine;
     }
 }

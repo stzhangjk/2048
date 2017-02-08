@@ -1,12 +1,7 @@
 package gui;
 
-import game.GameEngine;
-import gui.playPanel.PlayPanel;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 
 /**
@@ -16,12 +11,12 @@ public class MainFrame extends JFrame{
 
     public static String MENU_PANEL_NAME = "menu";
     public static String OPTION_PANEL_NAME = "option";
-    public static String PLAY_PANEL_NAME = "play";
+    public static String SINGLE_PLAY_PANEL_NAME = "singlePlay";
+    public static String MULTI_PLAY_PANEL_NAME = "multiPlay";
 
 
     private MenuPanel menuPanel;
     private OptionPanel optionPanel;
-    private PlayPanel playPanel;
     private CardLayout cardLayout;
 
     public MainFrame() {
@@ -33,24 +28,18 @@ public class MainFrame extends JFrame{
         menuPanel = new MenuPanel();
         /*创建配置面板*/
         optionPanel = new OptionPanel();
-        GameEngine engine = new GameEngine();
-        GameContext.setEngine(engine);
-        /*创建游戏面板*/
-        playPanel = new PlayPanel();
+
         /*设置卡片布局*/
         cardLayout = new CardLayout();
         getContentPane().setLayout(cardLayout);
-
         getContentPane().add(menuPanel,MENU_PANEL_NAME);
         getContentPane().add(optionPanel,OPTION_PANEL_NAME);
-        getContentPane().add(playPanel,PLAY_PANEL_NAME);
 
         GameContext.setMainFrame(this);
-
-
     }
 
     public void showView(String name){
         cardLayout.show(getContentPane(),name);
     }
+
 }
