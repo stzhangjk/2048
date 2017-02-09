@@ -13,6 +13,7 @@ public class MainFrame extends JFrame{
     public static String OPTION_PANEL_NAME = "option";
     public static String SINGLE_PLAY_PANEL_NAME = "singlePlay";
     public static String MULTI_PLAY_PANEL_NAME = "multiPlay";
+    public static String CONN_PANEL = "conn";
 
 
     private MenuPanel menuPanel;

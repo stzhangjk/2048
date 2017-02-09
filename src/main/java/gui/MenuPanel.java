@@ -2,6 +2,7 @@ package gui;
 
 import game.GameEngine;
 import game.interfaces.view.IMenuView;
+import gui.multiPlay.ConnectPanel;
 import gui.singlePlay.GamePanel;
 import gui.singlePlay.SinglePlayPanel;
 import util.ColorSet;
@@ -35,6 +36,7 @@ public class MenuPanel extends JPanel implements IMenuView{
         titleBox.add(title);
         titleBox.add(Box.createHorizontalGlue());
 
+
         singlePlay = new MenuButton("单机游戏");
         singlePlay.addActionListener(e->{
             new Thread(()->{
@@ -56,12 +58,21 @@ public class MenuPanel extends JPanel implements IMenuView{
         singleBox.add(singlePlay);
         singleBox.add(Box.createHorizontalGlue());
 
+
         multiPlay = new MenuButton("双人联机");
+        multiPlay.addActionListener(e->{
+            SwingUtilities.invokeLater(()->{
+                ConnectPanel connectPanel = new ConnectPanel();
+                GameContext.getMainFrame().getContentPane().add(connectPanel,MainFrame.CONN_PANEL);
+                GameContext.getMainFrame().showView(MainFrame.CONN_PANEL);
+            });
+        });
         Box multiBox = Box.createHorizontalBox();
         multiBox.add(Box.createHorizontalGlue());
         //multiBox.add(Box.createHorizontalStrut(10));
         multiBox.add(multiPlay);
         multiBox.add(Box.createHorizontalGlue());
+
 
         option = new MenuButton("设置");
         option.addActionListener(e->{
