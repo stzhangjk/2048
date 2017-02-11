@@ -1,6 +1,6 @@
 package gui.singlePlay;
 
-import game.GameEngine;
+import game.interfaces.game.IGameEngine;
 import game.interfaces.view.IControlView;
 import gui.GameContext;
 import gui.MainFrame;
@@ -20,7 +20,7 @@ public class SingleInfoPanel extends JPanel implements IControlView{
     private GamePanel gamePanel;
     private ScorePanel cur;
     private ScorePanel best;
-    private GameEngine engine;
+    private IGameEngine engine;
 
     public SingleInfoPanel(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -104,8 +104,9 @@ public class SingleInfoPanel extends JPanel implements IControlView{
      * @param engine
      */
     @Override
-    public void setEngine(GameEngine engine) {
+    public void setEngine(IGameEngine engine) {
         this.engine = engine;
+        engine.setControlView(this);
     }
 
     private class ScorePanel extends JPanel {

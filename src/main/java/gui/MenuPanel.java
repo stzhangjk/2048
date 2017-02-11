@@ -1,6 +1,7 @@
 package gui;
 
 import game.GameEngine;
+import game.interfaces.game.IGameEngine;
 import game.interfaces.view.IMenuView;
 import gui.multiPlay.ConnectPanel;
 import gui.singlePlay.GamePanel;
@@ -43,7 +44,9 @@ public class MenuPanel extends JPanel implements IMenuView{
                 SwingUtilities.invokeLater(()->{
                     SinglePlayPanel playPanel = new SinglePlayPanel();
                     GamePanel gamePanel = playPanel.getGamePanel();
-                    GameEngine engine = new GameEngine(gamePanel,playPanel.getInfoPanel());
+                    IGameEngine engine = new GameEngine();
+                    playPanel.getInfoPanel().setEngine(engine);
+                    gamePanel.setEngine(engine);
                     engine.start();
                     MainFrame frame = GameContext.getMainFrame();
                     frame.getContentPane().add(playPanel,MainFrame.SINGLE_PLAY_PANEL_NAME);

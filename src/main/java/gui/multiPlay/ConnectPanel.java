@@ -1,11 +1,15 @@
 package gui.multiPlay;
 
 
+import game.GameEngine;
+import game.interfaces.game.IGameEngine;
 import game.interfaces.view.mulitiPlay.IConnectView;
 import game.multiPlay.ClientThread;
 import game.multiPlay.ConnUtil;
+import game.multiPlay.GameEngineProxy;
 import game.multiPlay.ServerThread;
 import gui.GameContext;
+import gui.MainFrame;
 import org.jdesktop.swingx.JXTextField;
 import sun.net.util.IPAddressUtil;
 
@@ -13,6 +17,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -33,8 +40,11 @@ public class ConnectPanel extends JPanel implements IConnectView{
     private JXTextField serverIp;
     private ConnUtil connUtil;
     private JButton close;
+    private boolean isServer;
     private ServerThread sThread;
     private ClientThread cThread;
+    /**开始游戏*/
+    private JButton start;
 
 
     public ConnectPanel() {
@@ -56,8 +66,17 @@ public class ConnectPanel extends JPanel implements IConnectView{
         send = new JButton("发送");
         send.setFont(font);
         send.addActionListener(e->{
-            textArea.append(inputTxt.getText() + "\n");
-            inputTxt.setText("");
+            String str;
+            if(sThread == null && cThread == null){
+                str = "请先联机";
+            }else {
+                str = inputTxt.getText();
+                inputTxt.setText("");
+                if(isServer){
+                    sThread.send(str);
+                }else cThread.send(str);
+            }
+            showMessage(str);
         });
 
         JPanel inputJP = new JPanel();
@@ -90,15 +109,20 @@ public class ConnectPanel extends JPanel implements IConnectView{
             if(sThread == null) {
                 sThread = new ServerThread(GameContext.getHost(),ConnectPanel.this);
                 sThread.start();
+                isServer = true;
             }
         });
         asClient = new JButton("连接到主机");
         asClient.addActionListener(e->{
             try {
-                InetAddress remote = InetAddress.getByAddress(IPAddressUtil.textToNumericFormatV4(serverIp.getText()));
-                GameContext.setRemote(remote);
-                cThread = new ClientThread(GameContext.getHost(),GameContext.getRemote(),this);
-                cThread.start();
+                byte[] ip = IPAddressUtil.textToNumericFormatV4(serverIp.getText().trim());
+                if(cThread == null && ip != null){
+                    InetAddress remote = InetAddress.getByAddress(ip);
+                    GameContext.setRemote(remote);
+                    cThread = new ClientThread(GameContext.getRemote(),this);
+                    cThread.start();
+                    isServer = false;
+                }else showMessage("请输入格式正确的ip地址");
             } catch (UnknownHostException e1) {
                 e1.printStackTrace();
             }
@@ -109,8 +133,21 @@ public class ConnectPanel extends JPanel implements IConnectView{
         serverIp = new JXTextField("输入对方ip地址……",Color.GRAY);
         close = new JButton("断开连接");
         close.setFont(font);
+        close.setEnabled(false);
         close.addActionListener(e->{
-
+            if(isServer){
+                sThread.close();
+            }else cThread.close();
+        });
+        start = new JButton("开始游戏");
+        start.setFont(font);
+        start.setEnabled(false);
+        start.addActionListener(e->{
+            SwingUtilities.invokeLater(()->{
+                if(isServer){
+                    new Thread(()->sThread.startGame()).start();
+                }else new Thread(()->cThread.startGame()).start();
+            });
         });
         Box connBox = Box.createHorizontalBox();
         connBox.add(asServer);
@@ -121,6 +158,8 @@ public class ConnectPanel extends JPanel implements IConnectView{
         connBox.add(serverIp);
         connBox.add(Box.createHorizontalStrut(5));
         connBox.add(close);
+        connBox.add(Box.createHorizontalStrut(5));
+        connBox.add(start);
 
 
         Box south = Box.createVerticalBox();
@@ -147,6 +186,47 @@ public class ConnectPanel extends JPanel implements IConnectView{
      */
     @Override
     public void showMessage(String message) {
-        textArea.append(message + "\n");
+        SwingUtilities.invokeLater(()->textArea.append(message + "\n"));
+    }
+
+    /**
+     * 连接时
+     */
+    @Override
+    public void onConnecting() {
+        SwingUtilities.invokeLater(()->{
+            asServer.setEnabled(false);
+            asClient.setEnabled(false);
+            addresses.setEnabled(false);
+            serverIp.setEnabled(false);
+            close.setEnabled(false);
+        });
+    }
+
+    /**
+     * 连接成功
+     */
+    @Override
+    public void onSuccess() {
+        SwingUtilities.invokeLater(()->{
+            close.setEnabled(true);
+            start.setEnabled(true);
+        });
+    }
+
+    /**
+     * 关闭连接时
+     */
+    @Override
+    public void onClose() {
+        SwingUtilities.invokeLater(()->{
+            asServer.setEnabled(true);
+            asClient.setEnabled(true);
+            addresses.setEnabled(true);
+            serverIp.setEnabled(true);
+            close.setEnabled(false);
+            sThread = null;
+            cThread = null;
+        });
     }
 }

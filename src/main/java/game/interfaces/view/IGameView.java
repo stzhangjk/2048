@@ -2,6 +2,7 @@ package game.interfaces.view;
 
 import entity.Tile;
 import game.GameEngine;
+import game.interfaces.game.IGameEngine;
 import gui.animate.AnimateUnit;
 import java.util.List;
 
@@ -38,6 +39,6 @@ public interface IGameView {
     /**
      * 注入游戏引擎
      */
-    void setEngine(GameEngine engine);
+    void setEngine(IGameEngine engine);
 
 }

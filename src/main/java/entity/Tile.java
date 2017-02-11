@@ -1,9 +1,11 @@
 package entity;
 
+import java.io.Serializable;
+
 /**
  * Created by STZHANGJK on 2017.1.21.
  */
-public class Tile {
+public class Tile implements Serializable{
 
     private int i;
     private int j;

@@ -1,6 +1,7 @@
 package game;
 
 import entity.Tile;
+import game.interfaces.game.IGameEngine;
 import game.interfaces.view.IGameView;
 import game.interfaces.view.IControlView;
 import gui.animate.AnimateUnit;
@@ -13,7 +14,7 @@ import java.util.*;
  * Created by STZHANGJK on 2017.1.21.
  * 游戏线程
  */
-public class GameEngine {
+public class GameEngine implements IGameEngine{
 
     /**瓦片*/
     private Tile[][] tiles;
@@ -35,13 +36,7 @@ public class GameEngine {
     private boolean isMerged;
     /**分数*/
     private int score;
-
-    public GameEngine(IGameView gameView, IControlView controlView) {
-        this.gameView = gameView;
-        this.controlView = controlView;
-        gameView.setEngine(this);
-        controlView.setEngine(this);
-    }
+    private boolean isStart;
 
     /**
      * 初始化瓦片
@@ -73,13 +68,29 @@ public class GameEngine {
         controlView.setScore(score);
     }
 
+    @Override
+    public Tile[][] getTiles() {
+        return tiles;
+    }
+
+    @Override
+    public void initForRemote(Tile[][] tiles){
+        moveAnimateUnits = new ArrayList<>();
+        mergeAnimateUnits = new ArrayList<>();
+        this.tiles = tiles;
+        gameView.init(tiles);
+        score = 0;
+        controlView.setScore(score);
+    }
+
     /**
      * 开始游戏
      */
     public void start() {
-//        gameView = GameContext.getGameView();
-//        controlView = GameContext.getScoreView();
-        initGame();
+        if(!isStart){
+            initGame();
+            isStart = true;
+        }
     }
 
     /**
@@ -108,10 +119,6 @@ public class GameEngine {
             newTile.setValue(2);
             gameView.updateValue(newTile);
         }
-    }
-
-    public Tile[][] getTiles() {
-        return tiles;
     }
 
     public synchronized void doUp() {
@@ -361,6 +368,16 @@ public class GameEngine {
         Tile t = new Tile(to.getI(),to.getJ());
         t.setValue(to.getValue());
         return new AnimateUnit(f,t);
+    }
+
+    @Override
+    public void setGameView(IGameView view) {
+        this.gameView = view;
+    }
+
+    @Override
+    public void setControlView(IControlView view) {
+        this.controlView = view;
     }
 
     /**

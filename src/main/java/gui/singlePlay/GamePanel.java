@@ -2,6 +2,7 @@ package gui.singlePlay;
 
 import entity.Tile;
 import game.GameEngine;
+import game.interfaces.game.IGameEngine;
 import game.interfaces.view.IGameView;
 import gui.animate.MergeAnimate;
 import gui.animate.MoveAnimate;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 public class GamePanel extends JPanel implements IGameView{
 
-    private GameEngine engine;
+    private IGameEngine engine;
     private TilePanel[][] tilePanels;
     private final int GAP = 10;
 
@@ -168,7 +169,8 @@ public class GamePanel extends JPanel implements IGameView{
      * @param engine
      */
     @Override
-    public void setEngine(GameEngine engine) {
+    public void setEngine(IGameEngine engine) {
         this.engine = engine;
+        engine.setGameView(this);
     }
 }

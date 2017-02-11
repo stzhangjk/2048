@@ -9,4 +9,19 @@ public interface IConnectView {
      * @param message
      */
     void showMessage(String message);
+
+    /**
+     * 连接时
+     */
+    void onConnecting();
+
+    /**
+     * 连接成功
+     */
+    void onSuccess();
+
+    /**
+     * 关闭连接时
+     */
+    void onClose();
 }

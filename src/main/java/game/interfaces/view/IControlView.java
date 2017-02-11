@@ -1,6 +1,7 @@
 package game.interfaces.view;
 
-import game.GameEngine;
+
+import game.interfaces.game.IGameEngine;
 
 /**
  * Created by STZHANGJK on 2017.2.6.
@@ -15,5 +16,5 @@ public interface IControlView {
      * 注入引擎
      * @param engine
      */
-    void setEngine(GameEngine engine);
+    void setEngine(IGameEngine engine);
 }
