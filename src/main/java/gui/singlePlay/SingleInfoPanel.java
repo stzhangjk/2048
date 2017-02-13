@@ -106,7 +106,6 @@ public class SingleInfoPanel extends JPanel implements IControlView{
     @Override
     public void setEngine(IGameEngine engine) {
         this.engine = engine;
-        engine.setControlView(this);
     }
 
     private class ScorePanel extends JPanel {

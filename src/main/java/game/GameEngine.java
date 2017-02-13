@@ -8,6 +8,7 @@ import gui.animate.AnimateUnit;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
+import java.rmi.RemoteException;
 import java.util.*;
 
 /**
@@ -36,7 +37,6 @@ public class GameEngine implements IGameEngine{
     private boolean isMerged;
     /**分数*/
     private int score;
-    private boolean isStart;
 
     /**
      * 初始化瓦片
@@ -55,17 +55,16 @@ public class GameEngine implements IGameEngine{
     /**
      * 初始化游戏
      */
-    private void initGame() {
+    @Override
+    public void initGame() {
         moveAnimateUnits = new ArrayList<>();
         mergeAnimateUnits = new ArrayList<>();
         initTiles(4);
-        gameView.init(tiles);
         /*生成两个2*/
         createTile();
         createTile();
         /*分数置0*/
         score = 0;
-        controlView.setScore(score);
     }
 
     @Override
@@ -78,19 +77,14 @@ public class GameEngine implements IGameEngine{
         moveAnimateUnits = new ArrayList<>();
         mergeAnimateUnits = new ArrayList<>();
         this.tiles = tiles;
-        gameView.init(tiles);
         score = 0;
-        controlView.setScore(score);
     }
 
     /**
      * 开始游戏
      */
     public void start() {
-        if(!isStart){
-            initGame();
-            isStart = true;
-        }
+        initGame();
     }
 
     /**
@@ -103,9 +97,9 @@ public class GameEngine implements IGameEngine{
     /**
      * 生成新的数字
      */
-    private void createTile() {
+    private Tile createTile() {
         List<Tile> zero = new ArrayList<>();
-
+        Tile newTile = null;
         for (int i = 0, len = tiles.length; i < len; i++) {
             for (int j = 0; j < len; j++)
                 if (tiles[i][j].getValue() == 0)
@@ -115,9 +109,16 @@ public class GameEngine implements IGameEngine{
         if (!zero.isEmpty()) {
             Random rand = new Random();
             int index = rand.nextInt(zero.size());
-            Tile newTile = zero.get(index);
+            newTile = zero.get(index);
             newTile.setValue(2);
-            gameView.updateValue(newTile);
+        }
+        return newTile;
+    }
+
+    private void createTileAndUpdate() throws RemoteException {
+        Tile newT = createTile();
+        if(newT != null){
+            gameView.updateValue(newT);
         }
     }
 
@@ -277,30 +278,38 @@ public class GameEngine implements IGameEngine{
              /*处理数据*/
             if(isMove || isMerged){
                 SwingUtilities.invokeAndWait(()->{
-                    gameView.doMoveAnimate(moveAnimateUnits);
-                    for(AnimateUnit unit : moveAnimateUnits){
-                        Tile from = unit.getFrom();
-                        Tile to = unit.getTo();
-                        to.setValue(from.getValue());
-                        from.setValue(0);
-                        gameView.updateValue(from);
-                        gameView.updateValue(to);
+                    try {
+                        gameView.doMoveAnimate(moveAnimateUnits);
+                        for(AnimateUnit unit : moveAnimateUnits){
+                            Tile from = unit.getFrom();
+                            Tile to = unit.getTo();
+                            to.setValue(from.getValue());
+                            from.setValue(0);
+                            gameView.updateValue(from);
+                            gameView.updateValue(to);
+                        }
+                        moveAnimateUnits.clear();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
                     }
-                    moveAnimateUnits.clear();
                 });
             }
 
             if(isMerged){
                 SwingUtilities.invokeAndWait(()->{
-                    gameView.doMergeAnimate(mergeAnimateUnits);
-                    score += mergeAnimateUnits.size();
-                    controlView.setScore(score);
-                    mergeAnimateUnits.clear();
+                    try {
+                        gameView.doMergeAnimate(mergeAnimateUnits);
+                        score += mergeAnimateUnits.size();
+                        controlView.setScore(score);
+                        mergeAnimateUnits.clear();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 });
             }
 
             if (isMerged || isMove) {
-                createTile();
+                createTileAndUpdate();
             }
             judgeDeath();
 
@@ -308,13 +317,15 @@ public class GameEngine implements IGameEngine{
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
     /**
      * 判断死亡
      */
-    private void judgeDeath(){
+    private void judgeDeath() throws RemoteException {
         boolean dead = true;
         for(int i=0,len = tiles.length;i<len && dead;i++){
             for(int j=0;j<len && dead;j++){

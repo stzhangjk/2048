@@ -14,6 +14,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -128,7 +129,6 @@ public class GamePanel extends JPanel implements IGameView{
         if(animateUnits.size() > 0){
             new MoveAnimate(this,animateUnits).play();
         }
-
     }
 
     /**
@@ -139,6 +139,14 @@ public class GamePanel extends JPanel implements IGameView{
         if(animateUnits.size() > 0) {
             new MergeAnimate(this, animateUnits).play();
         }
+    }
+
+    @Override
+    public void doMoveAnimate(AnimateUnit[] animateUnits) {
+    }
+
+    @Override
+    public void doMergeAnimate(AnimateUnit[] animateUnits) {
     }
 
     /**
@@ -171,6 +179,5 @@ public class GamePanel extends JPanel implements IGameView{
     @Override
     public void setEngine(IGameEngine engine) {
         this.engine = engine;
-        engine.setGameView(this);
     }
 }

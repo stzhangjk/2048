@@ -47,6 +47,8 @@ public class MenuPanel extends JPanel implements IMenuView{
                     IGameEngine engine = new GameEngine();
                     playPanel.getInfoPanel().setEngine(engine);
                     gamePanel.setEngine(engine);
+                    engine.setControlView(playPanel.getInfoPanel());
+                    engine.setGameView(gamePanel);
                     engine.start();
                     MainFrame frame = GameContext.getMainFrame();
                     frame.getContentPane().add(playPanel,MainFrame.SINGLE_PLAY_PANEL_NAME);

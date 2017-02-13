@@ -10,18 +10,10 @@ import java.net.UnknownHostException;
  */
 public class ConnUtil {
 
-    public static int port = 24500;
-
-    public String getIpInString(){
-        String add = null;
-        try {
-            add = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
-        return add;
-    }
+    public static int ENGINE_PORT_SERVER = 27889;
+    public static int ENGINE_PORT_CLIENT = 27890;
+    public static int VIEW_PORT_SERVER = 27891;
+    public static int VIEW_PORT_CLIENT = 27892;
 
     public InetAddress[] getAddress(){
         InetAddress[] adds = null;

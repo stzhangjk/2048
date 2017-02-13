@@ -41,16 +41,28 @@ public class MultiPlayPanel extends JPanel{
 
     }
 
-    public void setEngine(IGameEngine localEngine,IGameEngine remoteEngine){
+    public void setEngine(IGameEngine localEngine){
         localGamePanel.setEngine(localEngine);
-        remoteGamePanel.setEngine(remoteEngine);
-        infoPanel.setEngine(localEngine, remoteEngine);
-
         localIJP.setEngine(localEngine);
-        remoteIJP.setEngine(remoteEngine);
     }
 
     public GamePanel getLocalGamePanel() {
         return localGamePanel;
+    }
+
+    public void setLocalGamePanel(GamePanel localGamePanel) {
+        this.localGamePanel = localGamePanel;
+    }
+
+    public GamePanel getRemoteGamePanel() {
+        return remoteGamePanel;
+    }
+
+    public SingleInfoPanel getLocalIJP() {
+        return localIJP;
+    }
+
+    public void setLocalIJP(SingleInfoPanel localIJP) {
+        this.localIJP = localIJP;
     }
 }
