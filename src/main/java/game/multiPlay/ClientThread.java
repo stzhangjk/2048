@@ -3,7 +3,6 @@ package game.multiPlay;
 
 import game.interfaces.view.mulitiPlay.IConnectView;
 import gui.GameContext;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.rmi.AlreadyBoundException;
@@ -56,6 +55,16 @@ public class ClientThread extends MultiPlayEngine {
     @Override
     protected int getViewPortRemote() {
         return ConnUtil.VIEW_PORT_SERVER;
+    }
+
+    @Override
+    protected int getInfoPortLocal() {
+        return ConnUtil.INFO_VIEW_PORT_CLIENT;
+    }
+
+    @Override
+    protected int getInfoPortRemote() {
+        return ConnUtil.INFO_VIEW_PORT_SERVER;
     }
 
     @Override

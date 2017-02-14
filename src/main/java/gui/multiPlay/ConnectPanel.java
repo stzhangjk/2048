@@ -6,6 +6,7 @@ import gui.GameContext;
 import org.jdesktop.swingx.JXTextField;
 import sun.net.util.IPAddressUtil;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ItemEvent;
@@ -23,7 +24,7 @@ public class ConnectPanel extends JPanel implements IConnectView{
     /**发送消息控件*/
     private JXTextField inputTxt;
     private JButton send;
-    /**联机地址相关*/
+    /*联机地址相关*/
     private JComboBox addresses;
     private JButton asServer;
     private JButton asClient;
@@ -34,10 +35,11 @@ public class ConnectPanel extends JPanel implements IConnectView{
     private MultiPlayEngine multiPlayEngine;
     /**开始游戏*/
     private JButton start;
-
+    /*界面相关*/
+    private Font font;
 
     public ConnectPanel() {
-        Font font = new Font("微软雅黑",Font.PLAIN,15);
+        font = new Font("微软雅黑",Font.PLAIN,15);
         textArea = new JTextArea();
         textArea.setFont(font);
         textArea.setLineWrap(true);
@@ -221,5 +223,15 @@ public class ConnectPanel extends JPanel implements IConnectView{
             close.setEnabled(false);
             multiPlayEngine = null;
         });
+    }
+
+    private class CtlButton extends JButton{
+        public CtlButton(String text) {
+            super(text);
+            setFont(font);
+            setContentAreaFilled(false);//透明
+            setMargin(new Insets(0,0,0,0));
+            setFont(new Font("微软雅黑",Font.PLAIN,15));
+        }
     }
 }

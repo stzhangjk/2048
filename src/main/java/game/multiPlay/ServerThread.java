@@ -50,6 +50,16 @@ public class ServerThread extends MultiPlayEngine {
     }
 
     @Override
+    protected int getInfoPortLocal() {
+        return ConnUtil.INFO_VIEW_PORT_SERVER;
+    }
+
+    @Override
+    protected int getInfoPortRemote() {
+        return ConnUtil.INFO_VIEW_PORT_CLIENT;
+    }
+
+    @Override
     public void close() {
 
     }

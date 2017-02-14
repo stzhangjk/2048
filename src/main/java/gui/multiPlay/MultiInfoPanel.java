@@ -10,6 +10,8 @@ import javax.swing.*;
  */
 public class MultiInfoPanel extends JPanel implements IMultiControlView{
 
+
+
     /**
      * @param score
      */

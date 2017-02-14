@@ -3,7 +3,7 @@ package game;
 import entity.Tile;
 import game.interfaces.game.IGameEngine;
 import game.interfaces.view.IGameView;
-import game.interfaces.view.IControlView;
+import game.interfaces.view.IInfoView;
 import gui.animate.AnimateUnit;
 
 import javax.swing.*;
@@ -24,7 +24,7 @@ public class GameEngine implements IGameEngine{
      */
     private IGameView gameView;
     /**控制界面界面*/
-    private IControlView controlView;
+    private IInfoView infoView;
     /**
      * 移动动作单元列表
      */
@@ -37,6 +37,8 @@ public class GameEngine implements IGameEngine{
     private boolean isMerged;
     /**分数*/
     private int score;
+    /**最大的值*/
+    private int max;
 
     /**
      * 初始化瓦片
@@ -65,6 +67,7 @@ public class GameEngine implements IGameEngine{
         createTile();
         /*分数置0*/
         score = 0;
+        max = 0;
     }
 
     @Override
@@ -78,6 +81,7 @@ public class GameEngine implements IGameEngine{
         mergeAnimateUnits = new ArrayList<>();
         this.tiles = tiles;
         score = 0;
+        max = 0;
     }
 
     /**
@@ -298,9 +302,13 @@ public class GameEngine implements IGameEngine{
             if(isMerged){
                 SwingUtilities.invokeAndWait(()->{
                     try {
-                        gameView.doMergeAnimate(mergeAnimateUnits);
+                        int v = gameView.doMergeAnimate(mergeAnimateUnits);
                         score += mergeAnimateUnits.size();
-                        controlView.setScore(score);
+                        infoView.setScore(score);
+                        if(v > max){
+                            max = v;
+                            infoView.setMax(v);
+                        }
                         mergeAnimateUnits.clear();
                     } catch (RemoteException e) {
                         e.printStackTrace();
@@ -386,9 +394,8 @@ public class GameEngine implements IGameEngine{
         this.gameView = view;
     }
 
-    @Override
-    public void setControlView(IControlView view) {
-        this.controlView = view;
+    public void setInfoView(IInfoView view) {
+        this.infoView = view;
     }
 
     /**

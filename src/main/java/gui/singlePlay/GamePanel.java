@@ -1,7 +1,6 @@
 package gui.singlePlay;
 
 import entity.Tile;
-import game.GameEngine;
 import game.interfaces.game.IGameEngine;
 import game.interfaces.view.IGameView;
 import gui.animate.MergeAnimate;
@@ -14,7 +13,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -135,18 +133,10 @@ public class GamePanel extends JPanel implements IGameView{
      * 合并效果
      */
     @Override
-    public void doMergeAnimate(List<AnimateUnit> animateUnits) {
+    public int doMergeAnimate(List<AnimateUnit> animateUnits) {
         if(animateUnits.size() > 0) {
-            new MergeAnimate(this, animateUnits).play();
-        }
-    }
-
-    @Override
-    public void doMoveAnimate(AnimateUnit[] animateUnits) {
-    }
-
-    @Override
-    public void doMergeAnimate(AnimateUnit[] animateUnits) {
+            return new MergeAnimate(this, animateUnits).play();
+        }else return 0;
     }
 
     /**
@@ -180,4 +170,6 @@ public class GamePanel extends JPanel implements IGameView{
     public void setEngine(IGameEngine engine) {
         this.engine = engine;
     }
+
+
 }

@@ -2,7 +2,7 @@ package gui.animate;
 
 import entity.Tile;
 import gui.singlePlay.GamePanel;
-import gui.singlePlay.TilePanel;
+
 import java.util.List;
 
 /**
@@ -10,23 +10,30 @@ import java.util.List;
  */
 public class MergeAnimate {
 
+
     private GamePanel gameView;
     private List<AnimateUnit> animateUnits;
-    private TilePanel[][] tilePanels;
 
     public MergeAnimate(GamePanel gameView, List<AnimateUnit> animateUnits) {
         this.gameView = gameView;
         this.animateUnits = animateUnits;
-        this.tilePanels = gameView.getTilePanels();
     }
 
-    public void play() {
+    /**
+     * 播放动画
+     * @return 返回融合后的最大值
+     */
+    public int play() {
+        int max = 0;
         for(AnimateUnit unit : animateUnits){
             Tile from = unit.getFrom();
             Tile to = unit.getTo();
             from.setValue(0);
-            to.setValue(to.getValue() << 1);
+            int v = to.getValue() << 1;
+            to.setValue(v);
             gameView.updateValue(to);
+            max = Integer.max(max,v);
         }
+        return max;
     }
 }

@@ -7,7 +7,6 @@ import gui.animate.AnimateUnit;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,16 +26,6 @@ public class RemoteGameViewProxy extends UnicastRemoteObject implements IGameVie
     }
 
     @Override
-    public void doMoveAnimate(AnimateUnit[] animateUnits) throws RemoteException {
-        gameView.doMoveAnimate(Arrays.asList(animateUnits));
-    }
-
-    @Override
-    public void doMergeAnimate(AnimateUnit[] animateUnits) throws RemoteException {
-        gameView.doMergeAnimate(Arrays.asList(animateUnits));
-    }
-
-    @Override
     public void updateValue(Tile tile) throws RemoteException {
         gameView.updateValue(tile);
     }
@@ -52,12 +41,12 @@ public class RemoteGameViewProxy extends UnicastRemoteObject implements IGameVie
     }
 
     @Override
-    public void doMoveAnimate(List<AnimateUnit> animateUnits) {
-
+    public void doMoveAnimate(List<AnimateUnit> animateUnits)  throws RemoteException{
+        gameView.doMoveAnimate(animateUnits);
     }
 
     @Override
-    public void doMergeAnimate(List<AnimateUnit> animateUnits) {
-
+    public int doMergeAnimate(List<AnimateUnit> animateUnits)  throws RemoteException{
+        return gameView.doMergeAnimate(animateUnits);
     }
 }

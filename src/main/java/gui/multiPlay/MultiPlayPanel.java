@@ -1,8 +1,6 @@
 package gui.multiPlay;
 
-import game.interfaces.game.IGameEngine;
 import gui.singlePlay.GamePanel;
-import gui.singlePlay.SingleInfoPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,56 +11,47 @@ import java.awt.*;
 public class MultiPlayPanel extends JPanel{
 
     private MultiInfoPanel infoPanel;
-    private SingleInfoPanel localIJP;
-    private SingleInfoPanel remoteIJP;
+    private InfoPanel lInfoView;
+    private InfoPanel rInfoView;
     private GamePanel localGamePanel;
     private GamePanel remoteGamePanel;
 
     public MultiPlayPanel() {
-        infoPanel = new MultiInfoPanel();
 
         localGamePanel = new GamePanel();
         localGamePanel.setFocusable(true);
         remoteGamePanel = new GamePanel();
         remoteGamePanel.setFocusable(false);
 
-        localIJP = new SingleInfoPanel(localGamePanel);
-        remoteIJP = new SingleInfoPanel(remoteGamePanel);
+        infoPanel = new MultiInfoPanel();
+        lInfoView = new InfoPanel();
+        rInfoView = new InfoPanel();
 
         JPanel gamePanel = new JPanel();
-        gamePanel.setLayout(new GridLayout(1,2,10,10));
+        gamePanel.setLayout(new GridLayout(2,2,10,10));
+        gamePanel.add(lInfoView);
+        gamePanel.add(rInfoView);
         gamePanel.add(localGamePanel);
         gamePanel.add(remoteGamePanel);
 
         setLayout(new BorderLayout(0,0));
         add(infoPanel,BorderLayout.NORTH);
         add(gamePanel,BorderLayout.CENTER);
-
-
-    }
-
-    public void setEngine(IGameEngine localEngine){
-        localGamePanel.setEngine(localEngine);
-        localIJP.setEngine(localEngine);
     }
 
     public GamePanel getLocalGamePanel() {
         return localGamePanel;
     }
 
-    public void setLocalGamePanel(GamePanel localGamePanel) {
-        this.localGamePanel = localGamePanel;
-    }
-
     public GamePanel getRemoteGamePanel() {
         return remoteGamePanel;
     }
 
-    public SingleInfoPanel getLocalIJP() {
-        return localIJP;
+    public InfoPanel getLInfoView() {
+        return lInfoView;
     }
 
-    public void setLocalIJP(SingleInfoPanel localIJP) {
-        this.localIJP = localIJP;
+    public InfoPanel getRInfoView() {
+        return rInfoView;
     }
 }

@@ -24,20 +24,9 @@ public interface IGameView extends Remote{
     void doMoveAnimate(List<AnimateUnit> animateUnits)throws RemoteException;
 
     /**
-     * 播放移动动画
-     * @param animateUnits
-     */
-    void doMoveAnimate(AnimateUnit[] animateUnits)throws RemoteException;
-
-    /**
      * 合并
      */
-    void doMergeAnimate(List<AnimateUnit> animateUnits)throws RemoteException;
-
-    /**
-     * 合并
-     */
-    void doMergeAnimate(AnimateUnit[] animateUnits)throws RemoteException;
+    int doMergeAnimate(List<AnimateUnit> animateUnits)throws RemoteException;
 
     /**
      * 更新一个瓦片的值

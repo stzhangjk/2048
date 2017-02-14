@@ -5,6 +5,7 @@ import game.GameEngine;
 import game.interfaces.game.IGameEngine;
 import game.interfaces.game.IMultiPlayEngine;
 import game.interfaces.view.IGameView;
+import game.interfaces.view.IInfoView;
 import game.interfaces.view.mulitiPlay.IConnectView;
 import gui.GameContext;
 import gui.MainFrame;
@@ -33,9 +34,14 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
     private IGameEngine localEngine;
     protected IMultiPlayEngine remoteEngine;
     private MultiPlayPanel mpp;
-    private IGameView localView;
-    private IGameView remoteView;
-    private IGameView proxyView;
+
+    private IGameView lGameView;
+    private IGameView rGameView;
+    private IGameView pGameView;
+
+    private IInfoView lInfoView;
+    private IInfoView rInfoView;
+    private IInfoView pInfoView;
 
     public MultiPlayEngine(IConnectView view) throws RemoteException {
         this.view = view;
@@ -72,6 +78,8 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
     protected abstract int getEnginePortRemote();
     protected abstract int getViewPortLocal();
     protected abstract int getViewPortRemote();
+    protected abstract int getInfoPortLocal();
+    protected abstract int getInfoPortRemote();
 
 
     /**
@@ -118,18 +126,25 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
     public void createView() throws RemoteException, AlreadyBoundException {
         System.out.println("createView");
         mpp = new MultiPlayPanel();
-        localView = mpp.getLocalGamePanel();
-        remoteView = mpp.getRemoteGamePanel();
-        RemoteGameViewProxy remoteProxy = new RemoteGameViewProxy(remoteView);
+
+        lGameView = mpp.getLocalGamePanel();
+        rGameView = mpp.getRemoteGamePanel();
+        RemoteGameViewProxy rGameViewProxy = new RemoteGameViewProxy(rGameView);
         Registry rr = LocateRegistry.createRegistry(getViewPortLocal());
-        rr.bind("gameView",remoteProxy);
+        rr.bind("gameView",rGameViewProxy);
+
+        lInfoView = mpp.getLInfoView();
+        rInfoView = mpp.getRInfoView();
+        RemoteInfoViewProxy rInfoViewProxy = new RemoteInfoViewProxy(rInfoView);
+        Registry rrr = LocateRegistry.createRegistry(getInfoPortLocal());
+        rrr.bind("infoView",rInfoViewProxy);
     }
 
     @Override
     public void initView(Tile[][] tiles) throws RemoteException {
         System.out.println("initView");
-        localView.init(tiles);
-        remoteView.init(tiles);
+        lGameView.init(tiles);
+        rGameView.init(tiles);
     }
 
     @Override
@@ -148,10 +163,14 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
     public void initViewProxy() throws RemoteException, MalformedURLException, NotBoundException {
         System.out.println("initViewProxy");
         /*获取proxy使用的远程视图*/
-        IGameView rv = (IGameView)Naming.lookup("rmi://" + remoteAddress.getHostAddress() + ":" + getViewPortRemote() +"/gameView");
+        IGameView rgv = (IGameView)Naming.lookup("rmi://" + remoteAddress.getHostAddress() + ":" + getViewPortRemote() +"/gameView");
         /*创建本地界面代理*/
-        LocalGameViewProxy handler = new LocalGameViewProxy(localView,rv);
-        proxyView = (IGameView) Proxy.newProxyInstance(localView.getClass().getClassLoader(),localView.getClass().getInterfaces(),handler);
+        LocalGameViewProxy gvHandler = new LocalGameViewProxy(lGameView,rgv);
+        pGameView = (IGameView) Proxy.newProxyInstance(lGameView.getClass().getClassLoader(), lGameView.getClass().getInterfaces(),gvHandler);
+
+        IInfoView riv = (IInfoView)Naming.lookup("rmi://" + remoteAddress.getHostAddress() + ":" + getInfoPortRemote() +"/infoView");
+        LocalInfoViewProxy ivHandler = new LocalInfoViewProxy(lInfoView,riv);
+        pInfoView = (IInfoView)Proxy.newProxyInstance(lInfoView.getClass().getClassLoader(),lInfoView.getClass().getInterfaces(),ivHandler);
     }
 
     @Override
@@ -170,8 +189,9 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
     @Override
     public void buildConnection() throws RemoteException {
         System.out.println("buildConnection");
-        localEngine.setGameView(proxyView);
-        localEngine.setControlView(mpp.getLocalIJP());//暂时
-        localView.setEngine(localEngine);
+        localEngine.setGameView(pGameView);
+        localEngine.setInfoView(pInfoView);
+        lGameView.setEngine(localEngine);
+        lInfoView.setEngine(localEngine);
     }
 }
