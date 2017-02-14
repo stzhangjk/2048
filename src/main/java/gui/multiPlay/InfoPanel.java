@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.geom.RoundRectangle2D;
 
 /**
  * Created by STZHANGJK on 2017.2.14.
@@ -24,13 +25,21 @@ public class InfoPanel extends JPanel implements IInfoView {
         valueBar = new JProgressBar(2,2048);
         valueBar.setForeground(ColorSet.getBGColor(2));
         valueBar.setBackground(ColorSet.BACKGROUND);
+        valueBar.setBorderPainted(false);
         value = new JLabel("2");
         value.setFont(font);
         value.setForeground(ColorSet.getTextColor(2));
         value.setHorizontalAlignment(SwingConstants.CENTER);
         value.setVerticalAlignment(SwingConstants.CENTER);
 
-        JLayeredPane valuePane = new JLayeredPane();
+        JLayeredPane valuePane = new JLayeredPane(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                RoundRectangle2D.Double rect = new RoundRectangle2D.Double(0,0,getWidth(),getHeight(),20,20);
+                g.setClip(rect);
+                super.paintComponent(g);
+            }
+        };
         valuePane.add(valueBar,new Integer(200));
         valuePane.add(value,new Integer(300));
         valuePane.addComponentListener(new ComponentListener() {
@@ -58,7 +67,8 @@ public class InfoPanel extends JPanel implements IInfoView {
 
 
         score = new ScorePanel("SCORE","0");
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(5,0));
+
         add(valuePane,BorderLayout.CENTER);
         add(score,BorderLayout.EAST);
     }
@@ -75,7 +85,6 @@ public class InfoPanel extends JPanel implements IInfoView {
 
     @Override
     public void setMax(int value) {
-        System.out.println("max : " + value);
         valueBar.setValue(value);
         this.value.setText(String.valueOf(value));
         this.value.setForeground(ColorSet.getTextColor(value));

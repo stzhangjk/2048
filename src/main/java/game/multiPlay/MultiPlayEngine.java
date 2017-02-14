@@ -127,8 +127,8 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
         System.out.println("createView");
         mpp = new MultiPlayPanel();
 
-        lGameView = mpp.getLocalGamePanel();
-        rGameView = mpp.getRemoteGamePanel();
+        lGameView = mpp.getlGameView();
+        rGameView = mpp.getrGameView();
         RemoteGameViewProxy rGameViewProxy = new RemoteGameViewProxy(rGameView);
         Registry rr = LocateRegistry.createRegistry(getViewPortLocal());
         rr.bind("gameView",rGameViewProxy);
@@ -181,8 +181,8 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
             GameContext.getMainFrame().getContentPane().add(mpp, MainFrame.MULTI_PLAY_PANEL_NAME);
             GameContext.getMainFrame().showView(MainFrame.MULTI_PLAY_PANEL_NAME);
             mpp.repaint();
-            mpp.getRemoteGamePanel().setFocusable(false);
-            mpp.getLocalGamePanel().requestFocus();
+            mpp.getrGameView().setFocusable(false);
+            mpp.getlGameView().requestFocus();
         });
     }
 

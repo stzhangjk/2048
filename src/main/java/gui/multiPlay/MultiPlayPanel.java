@@ -13,38 +13,73 @@ public class MultiPlayPanel extends JPanel{
     private MultiInfoPanel infoPanel;
     private InfoPanel lInfoView;
     private InfoPanel rInfoView;
-    private GamePanel localGamePanel;
-    private GamePanel remoteGamePanel;
+    private GamePanel lGameView;
+    private GamePanel rGameView;
 
     public MultiPlayPanel() {
 
-        localGamePanel = new GamePanel();
-        localGamePanel.setFocusable(true);
-        remoteGamePanel = new GamePanel();
-        remoteGamePanel.setFocusable(false);
+        lGameView = new GamePanel();
+        lGameView.setFocusable(true);
+        rGameView = new GamePanel();
+        rGameView.setFocusable(false);
 
         infoPanel = new MultiInfoPanel();
         lInfoView = new InfoPanel();
         rInfoView = new InfoPanel();
 
-        JPanel gamePanel = new JPanel();
-        gamePanel.setLayout(new GridLayout(2,2,10,10));
-        gamePanel.add(lInfoView);
-        gamePanel.add(rInfoView);
-        gamePanel.add(localGamePanel);
-        gamePanel.add(remoteGamePanel);
+        GridBagLayout layout = new GridBagLayout();
+        setLayout(layout);
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        setLayout(new BorderLayout(0,0));
-        add(infoPanel,BorderLayout.NORTH);
-        add(gamePanel,BorderLayout.CENTER);
+        gbc.insets = new Insets(10,10,10,10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 1;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        layout.setConstraints(lInfoView,gbc);
+        add(lInfoView);
+
+        gbc.insets = new Insets(10,10,10,10);
+        gbc.gridx = 4;
+        gbc.gridy = 0;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 1;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        layout.setConstraints(rInfoView,gbc);
+        add(rInfoView);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 4;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        layout.setConstraints(lGameView,gbc);
+        add(lGameView);
+
+        gbc.gridx = 4;
+        gbc.gridy = 1;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 4;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        layout.setConstraints(rGameView,gbc);
+        add(rGameView);
     }
 
-    public GamePanel getLocalGamePanel() {
-        return localGamePanel;
+    public GamePanel getlGameView() {
+        return lGameView;
     }
 
-    public GamePanel getRemoteGamePanel() {
-        return remoteGamePanel;
+    public GamePanel getrGameView() {
+        return rGameView;
     }
 
     public InfoPanel getLInfoView() {
