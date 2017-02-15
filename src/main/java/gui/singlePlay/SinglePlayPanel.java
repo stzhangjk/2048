@@ -8,22 +8,22 @@ import java.awt.*;
  */
 public class SinglePlayPanel extends JPanel {
 
-    private GamePanel gamePanel;
-    private SingleInfoPanel infoPanel;
+    private GamePanel gameView;
+    private SingleInfoPanel infoView;
 
     public SinglePlayPanel() {
-        gamePanel = new GamePanel();
-        infoPanel = new SingleInfoPanel(gamePanel);
+        gameView = new GamePanel();
+        infoView = new SingleInfoPanel(gameView);
         setLayout(new BorderLayout());
-        add(infoPanel,BorderLayout.NORTH);
-        add(gamePanel,BorderLayout.CENTER);
+        add(infoView,BorderLayout.NORTH);
+        add(gameView,BorderLayout.CENTER);
     }
 
-    public GamePanel getGamePanel() {
-        return gamePanel;
+    public GamePanel getGameView() {
+        return gameView;
     }
 
-    public SingleInfoPanel getInfoPanel() {
-        return infoPanel;
+    public SingleInfoPanel getInfoView() {
+        return infoView;
     }
 }

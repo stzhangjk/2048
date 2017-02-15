@@ -23,69 +23,49 @@ public class RemoteGameViewProxy extends UnicastRemoteObject implements IGameVie
 
     @Override
     public void init(Tile[][] tiles) throws RemoteException {
-        SwingUtilities.invokeLater(()->{
-            try {
-                gameView.init(tiles);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        });
+        gameView.init(tiles);
     }
 
     @Override
     public void updateValue(Tile tile) throws RemoteException {
-        SwingUtilities.invokeLater(()->{
-            try {
-                gameView.updateValue(tile);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        });
-
+        gameView.updateValue(tile);
     }
 
     @Override
     public void gameOver() throws RemoteException {
-        SwingUtilities.invokeLater(()->{
-            try {
-                gameView.gameOver();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        });
+        gameView.gameOver();
+    }
+
+    @Override
+    public void win() throws RemoteException {
+        gameView.win();
     }
 
     @Override
     public void setEngine(IGameEngine engine) throws RemoteException {
-        SwingUtilities.invokeLater(()->{
-            try {
-                gameView.setEngine(engine);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        });
+        gameView.setEngine(engine);
     }
 
     @Override
     public void doMoveAnimate(List<AnimateUnit> animateUnits)  throws RemoteException{
-        SwingUtilities.invokeLater(()->{
+        new Thread(() -> {
             try {
                 gameView.doMoveAnimate(animateUnits);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        });
+        }).start();
     }
 
     @Override
     public int doMergeAnimate(List<AnimateUnit> animateUnits)  throws RemoteException{
-        SwingUtilities.invokeLater(()->{
+        new Thread(() -> {
             try {
                 gameView.doMergeAnimate(animateUnits);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        });
+        }).start();
         return 0;
     }
 }

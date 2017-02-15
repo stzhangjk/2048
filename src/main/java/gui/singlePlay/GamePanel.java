@@ -2,7 +2,10 @@ package gui.singlePlay;
 
 import entity.Tile;
 import game.interfaces.game.IGameEngine;
+import game.interfaces.view.IControlView;
 import game.interfaces.view.IGameView;
+import gui.GameContext;
+import gui.MainFrame;
 import gui.animate.MergeAnimate;
 import gui.animate.MoveAnimate;
 import gui.animate.AnimateUnit;
@@ -13,6 +16,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.lang.reflect.InvocationTargetException;
+import java.rmi.RemoteException;
 import java.util.List;
 
 /**
@@ -83,20 +88,22 @@ public class GamePanel extends JPanel implements IGameView{
 
     @Override
     public void init(Tile[][] tiles) {
-        removeAll();
-        tilePanels = new TilePanel[tiles.length][tiles.length];
-        int width = (getWidth()-(2+tiles.length-1)*GAP)/tiles.length;
-        int height = (getHeight()-(2+tiles.length-1)*GAP)/tiles.length;
-        setLayout(null);
-        for(int i=0,len = tilePanels.length;i<len;i++){
-            for(int j=0;j<len;j++){
-                tilePanels[i][j] = new TilePanel(tiles[i][j].getValue());
-                tilePanels[i][j].setSize(width,height);
-                tilePanels[i][j].setLocation(GAP*(j+1)+width*j,GAP*(i+1)+height*i);
-                this.add(tilePanels[i][j]);
-                tilePanels[i][j].validate();
+        SwingUtilities.invokeLater(()->{
+            removeAll();
+            tilePanels = new TilePanel[tiles.length][tiles.length];
+            int width = (getWidth()-(2+tiles.length-1)*GAP)/tiles.length;
+            int height = (getHeight()-(2+tiles.length-1)*GAP)/tiles.length;
+            setLayout(null);
+            for(int i=0,len = tilePanels.length;i<len;i++){
+                for(int j=0;j<len;j++){
+                    tilePanels[i][j] = new TilePanel(tiles[i][j].getValue());
+                    tilePanels[i][j].setSize(width,height);
+                    tilePanels[i][j].setLocation(GAP*(j+1)+width*j,GAP*(i+1)+height*i);
+                    this.add(tilePanels[i][j]);
+                    tilePanels[i][j].validate();
+                }
             }
-        }
+        });
     }
 
     /**
@@ -145,13 +152,28 @@ public class GamePanel extends JPanel implements IGameView{
      */
     @Override
     public void updateValue(Tile tile) {
-        tilePanels[tile.getI()][tile.getJ()].updateValue(tile.getValue());
+        SwingUtilities.invokeLater(()->tilePanels[tile.getI()][tile.getJ()].updateValue(tile.getValue()));
+
     }
 
     @Override
     public void gameOver() {
-        JOptionPane.showMessageDialog(this,"死了！","游戏结束",JOptionPane.WARNING_MESSAGE);
+        SwingUtilities.invokeLater(()->JOptionPane.showMessageDialog(GameContext.getMainFrame(),"哈哈，你输了！","游戏结束",JOptionPane.WARNING_MESSAGE));
     }
+
+    @Override
+    public void win() throws RemoteException {
+        try {
+            SwingUtilities.invokeAndWait(()->{
+                JOptionPane.showMessageDialog(GameContext.getMainFrame(),"恭喜！你赢了！","游戏结束",JOptionPane.WARNING_MESSAGE);
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public int getGAP() {
         return GAP;

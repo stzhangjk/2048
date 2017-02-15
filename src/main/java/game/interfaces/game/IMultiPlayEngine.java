@@ -21,7 +21,9 @@ public interface IMultiPlayEngine extends Remote {
     void initViewProxy() throws RemoteException, MalformedURLException, NotBoundException;
     void showGameView()throws RemoteException;
     void buildConnection()throws RemoteException;
-    void close()throws RemoteException;
+    void deConnect()throws RemoteException;
+    void deConnectFromRemote() throws RemoteException, NotBoundException;
+    void endGame()throws RemoteException;
     void send(String message)throws RemoteException;
     void showMessage(String message)throws RemoteException;
     void getRemoteEngine(InetAddress remoteAddress)throws RemoteException;

@@ -1,6 +1,7 @@
 package game.interfaces.game;
 
 import entity.Tile;
+import game.interfaces.view.IControlView;
 import game.interfaces.view.IInfoView;
 import game.interfaces.view.IGameView;
 
@@ -20,4 +21,5 @@ public interface IGameEngine {
 
     void setGameView(IGameView view);
     void setInfoView(IInfoView view);
+    void setCtlView(IControlView view);
 }

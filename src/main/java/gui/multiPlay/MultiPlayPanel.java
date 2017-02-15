@@ -1,6 +1,7 @@
 package gui.multiPlay;
 
 import gui.singlePlay.GamePanel;
+import util.ColorSet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +11,6 @@ import java.awt.*;
  */
 public class MultiPlayPanel extends JPanel{
 
-    private MultiInfoPanel infoPanel;
     private InfoPanel lInfoView;
     private InfoPanel rInfoView;
     private GamePanel lGameView;
@@ -18,12 +18,13 @@ public class MultiPlayPanel extends JPanel{
 
     public MultiPlayPanel() {
 
+        setBackground(ColorSet.MENU_BACKGROUND);
+
         lGameView = new GamePanel();
         lGameView.setFocusable(true);
         rGameView = new GamePanel();
         rGameView.setFocusable(false);
 
-        infoPanel = new MultiInfoPanel();
         lInfoView = new InfoPanel();
         rInfoView = new InfoPanel();
 
@@ -31,7 +32,7 @@ public class MultiPlayPanel extends JPanel{
         setLayout(layout);
         GridBagConstraints gbc = new GridBagConstraints();
 
-        gbc.insets = new Insets(10,10,10,10);
+        gbc.insets = new Insets(10,10,5,5);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 4;
@@ -42,7 +43,7 @@ public class MultiPlayPanel extends JPanel{
         layout.setConstraints(lInfoView,gbc);
         add(lInfoView);
 
-        gbc.insets = new Insets(10,10,10,10);
+        gbc.insets = new Insets(10,5,5,10);
         gbc.gridx = 4;
         gbc.gridy = 0;
         gbc.gridwidth = 4;
@@ -53,6 +54,7 @@ public class MultiPlayPanel extends JPanel{
         layout.setConstraints(rInfoView,gbc);
         add(rInfoView);
 
+        gbc.insets = new Insets(5,10,10,5);
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 4;
@@ -63,6 +65,7 @@ public class MultiPlayPanel extends JPanel{
         layout.setConstraints(lGameView,gbc);
         add(lGameView);
 
+        gbc.insets = new Insets(5,5,10,10);
         gbc.gridx = 4;
         gbc.gridy = 1;
         gbc.gridwidth = 4;

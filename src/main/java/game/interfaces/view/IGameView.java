@@ -39,6 +39,11 @@ public interface IGameView extends Remote{
     void gameOver()throws RemoteException;
 
     /**
+     * 赢了
+     */
+    void win()throws RemoteException;
+
+    /**
      * 注入游戏引擎
      */
     void setEngine(IGameEngine engine)throws RemoteException;

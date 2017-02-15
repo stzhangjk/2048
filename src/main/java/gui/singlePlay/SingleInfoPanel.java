@@ -1,6 +1,7 @@
 package gui.singlePlay;
 
 import game.interfaces.game.IGameEngine;
+import game.interfaces.view.IControlView;
 import game.interfaces.view.IInfoView;
 import gui.GameContext;
 import gui.MainFrame;
@@ -8,11 +9,12 @@ import util.ColorSet;
 
 import javax.swing.*;
 import java.awt.*;
+import java.rmi.RemoteException;
 
 /**
  * Created by STZHANGJK on 2017.1.25.
  */
-public class SingleInfoPanel extends JPanel implements IInfoView {
+public class SingleInfoPanel extends JPanel implements IInfoView,IControlView {
 
     private JPanel upPanel;
     private JPanel downPanel;
@@ -56,14 +58,21 @@ public class SingleInfoPanel extends JPanel implements IInfoView {
         JButton back = new CtlButton("结束游戏");
         back.addActionListener(e->{
             SwingUtilities.invokeLater(()->{
-                GameContext.getMainFrame().showView(MainFrame.MENU_PANEL_NAME);
+                try {
+                    end();
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
             });
         });
         JButton restart = new CtlButton("重新开始");
         restart.addActionListener(e->{
-            engine.restart();
-            SingleInfoPanel.this.gamePanel.repaint();
-            SingleInfoPanel.this.gamePanel.requestFocus();
+            SwingUtilities.invokeLater(()->{
+                engine.restart();
+                SingleInfoPanel.this.gamePanel.init(engine.getTiles());
+                SingleInfoPanel.this.gamePanel.repaint();
+                SingleInfoPanel.this.gamePanel.requestFocus();
+            });
         });
         downPanel.setLayout(new BoxLayout(downPanel,BoxLayout.X_AXIS));
         downPanel.add(Box.createHorizontalStrut(10));
@@ -110,6 +119,11 @@ public class SingleInfoPanel extends JPanel implements IInfoView {
     @Override
     public void setMax(int value) {
 
+    }
+
+    @Override
+    public void end() throws RemoteException {
+        GameContext.getMainFrame().showView(MainFrame.MENU_PANEL_NAME);
     }
 
     private class CtlButton extends JButton{

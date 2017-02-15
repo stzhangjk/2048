@@ -2,6 +2,7 @@ package gui;
 
 import game.GameEngine;
 import game.interfaces.game.IGameEngine;
+import game.interfaces.view.IControlView;
 import game.interfaces.view.IMenuView;
 import gui.multiPlay.ConnectPanel;
 import gui.singlePlay.GamePanel;
@@ -13,6 +14,7 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * Created by STZHANGJK on 2017.1.25.
@@ -43,17 +45,19 @@ public class MenuPanel extends JPanel implements IMenuView{
             new Thread(()->{
                 SwingUtilities.invokeLater(()->{
                     SinglePlayPanel playPanel = new SinglePlayPanel();
-                    GamePanel gamePanel = playPanel.getGamePanel();
+                    GamePanel gameView = playPanel.getGameView();
                     IGameEngine engine = new GameEngine();
-                    playPanel.getInfoPanel().setEngine(engine);
-                    gamePanel.setEngine(engine);
-                    engine.setInfoView(playPanel.getInfoPanel());
-                    engine.setGameView(gamePanel);
+                    playPanel.getInfoView().setEngine(engine);
+                    gameView.setEngine(engine);
+                    engine.setInfoView(playPanel.getInfoView());
+                    engine.setGameView(gameView);
+                    engine.setCtlView(playPanel.getInfoView());
                     engine.start();
+                    gameView.init(engine.getTiles());
                     MainFrame frame = GameContext.getMainFrame();
                     frame.getContentPane().add(playPanel,MainFrame.SINGLE_PLAY_PANEL_NAME);
                     frame.showView(MainFrame.SINGLE_PLAY_PANEL_NAME);
-                    gamePanel.requestFocus();
+                    gameView.requestFocus();
                 });
             }).start();
         });

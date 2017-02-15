@@ -2,6 +2,7 @@ package game;
 
 import entity.Tile;
 import game.interfaces.game.IGameEngine;
+import game.interfaces.view.IControlView;
 import game.interfaces.view.IGameView;
 import game.interfaces.view.IInfoView;
 import gui.animate.AnimateUnit;
@@ -15,16 +16,24 @@ import java.util.*;
  * Created by STZHANGJK on 2017.1.21.
  * 游戏线程
  */
-public class GameEngine implements IGameEngine{
+public class GameEngine implements IGameEngine {
 
-    /**瓦片*/
+    /**
+     * 瓦片
+     */
     private Tile[][] tiles;
     /**
      * 游戏界面
      */
     private IGameView gameView;
-    /**控制界面界面*/
+    /**
+     * 分数界面
+     */
     private IInfoView infoView;
+    /**
+     * 控制
+     */
+    private IControlView ctlView;
     /**
      * 移动动作单元列表
      */
@@ -35,10 +44,17 @@ public class GameEngine implements IGameEngine{
     private List<AnimateUnit> mergeAnimateUnits;
     private boolean isMove;
     private boolean isMerged;
-    /**分数*/
+    /**
+     * 分数
+     */
     private int score;
-    /**最大的值*/
+    /**
+     * 最大的值
+     */
     private int max;
+    /**胜利条件*/
+    private final int WIN_NUM = 8;
+    private volatile boolean end;
 
     /**
      * 初始化瓦片
@@ -68,6 +84,7 @@ public class GameEngine implements IGameEngine{
         /*分数置0*/
         score = 0;
         max = 0;
+        end = false;
     }
 
     @Override
@@ -76,12 +93,13 @@ public class GameEngine implements IGameEngine{
     }
 
     @Override
-    public void initForRemote(Tile[][] tiles){
+    public void initForRemote(Tile[][] tiles) {
         moveAnimateUnits = new ArrayList<>();
         mergeAnimateUnits = new ArrayList<>();
         this.tiles = tiles;
         score = 0;
         max = 0;
+        end= false;
     }
 
     /**
@@ -94,7 +112,7 @@ public class GameEngine implements IGameEngine{
     /**
      * 重新开始
      */
-    public void restart(){
+    public void restart() {
         initGame();
     }
 
@@ -121,170 +139,179 @@ public class GameEngine implements IGameEngine{
 
     private void createTileAndUpdate() throws RemoteException {
         Tile newT = createTile();
-        if(newT != null){
+        if (newT != null) {
             gameView.updateValue(newT);
         }
     }
 
     public synchronized void doUp() {
-        isMove = false;
-        isMerged = false;
-        for (int j = 0, len = tiles.length; j < len; j++) {
-            int lastMergeX = -1;    //必须一排一排遍历才有用,不需要记纵轴
-            for (int from = 1; from < len; from++) {
-                int k = from;
-                if (tiles[from][j].getValue() != 0) {
-                    while (k > 0 && tiles[k - 1][j].getValue() == 0) {
+        if (!end) {
+            isMove = false;
+            isMerged = false;
+            for (int j = 0, len = tiles.length; j < len; j++) {
+                int lastMergeX = -1;    //必须一排一排遍历才有用,不需要记纵轴
+                for (int from = 1; from < len; from++) {
+                    int k = from;
+                    if (tiles[from][j].getValue() != 0) {
+                        while (k > 0 && tiles[k - 1][j].getValue() == 0) {
                     /*如果前方有空位...*/
-                        k--;
-                    }
-                    if (k != from) {
-                        if (k > 0 && lastMergeX != k - 1 && tiles[from][j].getValue() == tiles[k - 1][j].getValue()) {
-                            move(tiles[from][j], tiles[k - 1][j]);
-                            merge(tiles[from][j], tiles[k - 1][j]);
-                            isMerged = true;
-                            lastMergeX = k - 1;
-                        }else{
-                            move(tiles[from][j], tiles[k][j]);
-                            isMove = true;
+                            k--;
                         }
-                    }else{
-                        if (k > 0 && lastMergeX != k - 1 && tiles[from][j].getValue() == tiles[k - 1][j].getValue()) {
-                            move(tiles[from][j], tiles[k - 1][j]);
-                            merge(tiles[from][j], tiles[k - 1][j]);
-                            isMerged = true;
-                            lastMergeX = k - 1;
+                        if (k != from) {
+                            if (k > 0 && lastMergeX != k - 1 && tiles[from][j].getValue() == tiles[k - 1][j].getValue()) {
+                                move(tiles[from][j], tiles[k - 1][j]);
+                                merge(tiles[from][j], tiles[k - 1][j]);
+                                isMerged = true;
+                                lastMergeX = k - 1;
+                            } else {
+                                move(tiles[from][j], tiles[k][j]);
+                                isMove = true;
+                            }
+                        } else {
+                            if (k > 0 && lastMergeX != k - 1 && tiles[from][j].getValue() == tiles[k - 1][j].getValue()) {
+                                move(tiles[from][j], tiles[k - 1][j]);
+                                merge(tiles[from][j], tiles[k - 1][j]);
+                                isMerged = true;
+                                lastMergeX = k - 1;
+                            }
                         }
                     }
                 }
             }
+        /*处理数据并播放动画*/
+            playAnimate();
         }
-     /*处理数据并播放动画*/
-        playAnimate();
+
     }
 
     public synchronized void doDown() {
-        isMove = false;
-        isMerged = false;
-        for (int j = 0, len = tiles.length; j < len; j++) {
-            int lastMergeX = -1;
-            for (int from = len - 2; from >= 0; from--) {
-                int k = from;
-                if (tiles[from][j].getValue() != 0) {
-                    while (k < len - 1 && tiles[k + 1][j].getValue() == 0) {
+        if (!end) {
+            isMove = false;
+            isMerged = false;
+            for (int j = 0, len = tiles.length; j < len; j++) {
+                int lastMergeX = -1;
+                for (int from = len - 2; from >= 0; from--) {
+                    int k = from;
+                    if (tiles[from][j].getValue() != 0) {
+                        while (k < len - 1 && tiles[k + 1][j].getValue() == 0) {
                     /*如果前方有空位...*/
-                        k++;
-                    }
-                    if (k != from) {
-                        if (k < len - 1 && lastMergeX != k + 1 && tiles[from][j].getValue() == tiles[k + 1][j].getValue()) {
-                            move(tiles[from][j], tiles[k + 1][j]);
-                            merge(tiles[from][j], tiles[k + 1][j]);
-                            isMerged = true;
-                            lastMergeX = k + 1;
-                        }else{
-                            move(tiles[from][j], tiles[k][j]);
-                            isMove = true;
+                            k++;
                         }
-                    }else{
-                        if (k < len - 1 && lastMergeX != k + 1 && tiles[from][j].getValue() == tiles[k + 1][j].getValue()) {
-                            move(tiles[from][j], tiles[k + 1][j]);
-                            merge(tiles[from][j], tiles[k + 1][j]);
-                            isMerged = true;
-                            lastMergeX = k + 1;
+                        if (k != from) {
+                            if (k < len - 1 && lastMergeX != k + 1 && tiles[from][j].getValue() == tiles[k + 1][j].getValue()) {
+                                move(tiles[from][j], tiles[k + 1][j]);
+                                merge(tiles[from][j], tiles[k + 1][j]);
+                                isMerged = true;
+                                lastMergeX = k + 1;
+                            } else {
+                                move(tiles[from][j], tiles[k][j]);
+                                isMove = true;
+                            }
+                        } else {
+                            if (k < len - 1 && lastMergeX != k + 1 && tiles[from][j].getValue() == tiles[k + 1][j].getValue()) {
+                                move(tiles[from][j], tiles[k + 1][j]);
+                                merge(tiles[from][j], tiles[k + 1][j]);
+                                isMerged = true;
+                                lastMergeX = k + 1;
+                            }
                         }
-                    }
 
 
+                    }
                 }
             }
-        }
          /*处理数据并播放动画*/
-        playAnimate();
+            playAnimate();
+        }
     }
 
     public synchronized void doLeft() {
-        isMove = false;
-        isMerged = false;
-        for (int i = 0, len = tiles.length; i < len; i++) {
-            int lastMergeY = -1;
-            for (int from = 1; from < len; from++) {
-                int k = from;
-                if (tiles[i][from].getValue() != 0) {
-                    while (k > 0 && tiles[i][k - 1].getValue() == 0) {
+        if (!end) {
+            isMove = false;
+            isMerged = false;
+            for (int i = 0, len = tiles.length; i < len; i++) {
+                int lastMergeY = -1;
+                for (int from = 1; from < len; from++) {
+                    int k = from;
+                    if (tiles[i][from].getValue() != 0) {
+                        while (k > 0 && tiles[i][k - 1].getValue() == 0) {
                     /*如果前方有空位...*/
-                        k--;
-                    }
-                    if (k != from) {
-                        if (k > 0 && lastMergeY != k - 1 && tiles[i][from].getValue() == tiles[i][k - 1].getValue()) {
-                            move(tiles[i][from], tiles[i][k - 1]);
-                            merge(tiles[i][from], tiles[i][k - 1]);
-                            isMerged = true;
-                            lastMergeY = k - 1;
-                        }else {
-                            move(tiles[i][from], tiles[i][k]);
-                            isMove = true;
+                            k--;
                         }
-                    }else {
-                        if (k > 0 && lastMergeY != k - 1 && tiles[i][from].getValue() == tiles[i][k - 1].getValue()) {
-                            move(tiles[i][from], tiles[i][k - 1]);
-                            merge(tiles[i][from], tiles[i][k - 1]);
-                            isMerged = true;
-                            lastMergeY = k - 1;
+                        if (k != from) {
+                            if (k > 0 && lastMergeY != k - 1 && tiles[i][from].getValue() == tiles[i][k - 1].getValue()) {
+                                move(tiles[i][from], tiles[i][k - 1]);
+                                merge(tiles[i][from], tiles[i][k - 1]);
+                                isMerged = true;
+                                lastMergeY = k - 1;
+                            } else {
+                                move(tiles[i][from], tiles[i][k]);
+                                isMove = true;
+                            }
+                        } else {
+                            if (k > 0 && lastMergeY != k - 1 && tiles[i][from].getValue() == tiles[i][k - 1].getValue()) {
+                                move(tiles[i][from], tiles[i][k - 1]);
+                                merge(tiles[i][from], tiles[i][k - 1]);
+                                isMerged = true;
+                                lastMergeY = k - 1;
+                            }
                         }
                     }
                 }
             }
+            /*处理数据并播放动画*/
+            playAnimate();
         }
-       /*处理数据并播放动画*/
-        playAnimate();
     }
 
     public synchronized void doRight() {
-        isMove = false;
-        isMerged = false;
-        for (int i = 0, len = tiles.length; i < len; i++) {
+        if (!end) {
+            isMove = false;
+            isMerged = false;
+            for (int i = 0, len = tiles.length; i < len; i++) {
 
-            int lastMergeY = -1;
-            for (int from = len - 2; from >= 0; from--) {
-                int k = from;
-                if (tiles[i][from].getValue() != 0) {
-                    while (k < len-1 && tiles[i][k + 1].getValue() == 0) {
+                int lastMergeY = -1;
+                for (int from = len - 2; from >= 0; from--) {
+                    int k = from;
+                    if (tiles[i][from].getValue() != 0) {
+                        while (k < len - 1 && tiles[i][k + 1].getValue() == 0) {
                     /*如果前方有空位...*/
-                        k++;
-                    }
-                    if (k != from) {
-                        if (k < len-1 && lastMergeY != k + 1 && tiles[i][from].getValue() == tiles[i][k + 1].getValue()) {
-                            move(tiles[i][from], tiles[i][k + 1]);
-                            merge(tiles[i][from], tiles[i][k + 1]);
-                            isMerged = true;
-                            lastMergeY = k + 1;
-                        }else {
-                            move(tiles[i][from], tiles[i][k]);
-                            isMove = true;
+                            k++;
                         }
-                    }else {
-                        if (k < len-1 && lastMergeY != k + 1 && tiles[i][from].getValue() == tiles[i][k + 1].getValue()) {
-                            move(tiles[i][from], tiles[i][k + 1]);
-                            merge(tiles[i][from], tiles[i][k + 1]);
-                            isMerged = true;
-                            lastMergeY = k + 1;
+                        if (k != from) {
+                            if (k < len - 1 && lastMergeY != k + 1 && tiles[i][from].getValue() == tiles[i][k + 1].getValue()) {
+                                move(tiles[i][from], tiles[i][k + 1]);
+                                merge(tiles[i][from], tiles[i][k + 1]);
+                                isMerged = true;
+                                lastMergeY = k + 1;
+                            } else {
+                                move(tiles[i][from], tiles[i][k]);
+                                isMove = true;
+                            }
+                        } else {
+                            if (k < len - 1 && lastMergeY != k + 1 && tiles[i][from].getValue() == tiles[i][k + 1].getValue()) {
+                                move(tiles[i][from], tiles[i][k + 1]);
+                                merge(tiles[i][from], tiles[i][k + 1]);
+                                isMerged = true;
+                                lastMergeY = k + 1;
+                            }
                         }
                     }
                 }
             }
-        }
         /*处理数据并播放动画*/
-        playAnimate();
+            playAnimate();
+        }
     }
 
-    private void playAnimate(){
+    private void playAnimate() {
         try {
              /*处理数据*/
-            if(isMove || isMerged){
-                SwingUtilities.invokeAndWait(()->{
+            if (isMove || isMerged) {
+                SwingUtilities.invokeAndWait(() -> {
                     try {
                         gameView.doMoveAnimate(moveAnimateUnits);
-                        for(AnimateUnit unit : moveAnimateUnits){
+                        for (AnimateUnit unit : moveAnimateUnits) {
                             Tile from = unit.getFrom();
                             Tile to = unit.getTo();
                             to.setValue(from.getValue());
@@ -299,13 +326,13 @@ public class GameEngine implements IGameEngine{
                 });
             }
 
-            if(isMerged){
-                SwingUtilities.invokeAndWait(()->{
+            if (isMerged) {
+                SwingUtilities.invokeAndWait(() -> {
                     try {
                         int v = gameView.doMergeAnimate(mergeAnimateUnits);
                         score += mergeAnimateUnits.size();
                         infoView.setScore(score);
-                        if(v > max){
+                        if (v > max) {
                             max = v;
                             infoView.setMax(v);
                         }
@@ -335,31 +362,36 @@ public class GameEngine implements IGameEngine{
      */
     private void judgeDeath() throws RemoteException {
         boolean dead = true;
-        for(int i=0,len = tiles.length;i<len && dead;i++){
-            for(int j=0;j<len && dead;j++){
-                if(tiles[i][j].getValue() != 0){
-                    if(dead && i > 0){
-                        dead = tiles[i-1][j].getValue() != tiles[i][j].getValue();
+        for (int i = 0, len = tiles.length; i < len && dead; i++) {
+            for (int j = 0; j < len && dead; j++) {
+                if (tiles[i][j].getValue() != 0) {
+                    if (dead && i > 0) {
+                        dead = tiles[i - 1][j].getValue() != tiles[i][j].getValue();
                     }
-                    if(dead && i < len-1){
-                        dead = tiles[i+1][j].getValue() != tiles[i][j].getValue();
+                    if (dead && i < len - 1) {
+                        dead = tiles[i + 1][j].getValue() != tiles[i][j].getValue();
                     }
-                    if(dead && j > 0){
-                        dead = tiles[i][j-1].getValue() != tiles[i][j].getValue();
+                    if (dead && j > 0) {
+                        dead = tiles[i][j - 1].getValue() != tiles[i][j].getValue();
                     }
-                    if(dead && j < len-1){
-                        dead = tiles[i][j+1].getValue() != tiles[i][j].getValue();
+                    if (dead && j < len - 1) {
+                        dead = tiles[i][j + 1].getValue() != tiles[i][j].getValue();
                     }
-                }else dead = false;
+                } else dead = false;
             }
         }
-        if(dead){
+        if (dead) {
             gameView.gameOver();
+        } else if (max == WIN_NUM) {
+            gameView.win();
+            ctlView.end();
+            end = true;
         }
     }
 
     /**
      * 移动
+     *
      * @param from
      * @param to
      */
@@ -381,12 +413,12 @@ public class GameEngine implements IGameEngine{
         from.setValue(0);
     }
 
-    private AnimateUnit createUnit(Tile from, Tile to){
-        Tile f = new Tile(from.getI(),from.getJ());
+    private AnimateUnit createUnit(Tile from, Tile to) {
+        Tile f = new Tile(from.getI(), from.getJ());
         f.setValue(from.getValue());
-        Tile t = new Tile(to.getI(),to.getJ());
+        Tile t = new Tile(to.getI(), to.getJ());
         t.setValue(to.getValue());
-        return new AnimateUnit(f,t);
+        return new AnimateUnit(f, t);
     }
 
     @Override
@@ -394,8 +426,14 @@ public class GameEngine implements IGameEngine{
         this.gameView = view;
     }
 
+    @Override
     public void setInfoView(IInfoView view) {
         this.infoView = view;
+    }
+
+    @Override
+    public void setCtlView(IControlView ctlView) {
+        this.ctlView = ctlView;
     }
 
     /**

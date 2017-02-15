@@ -6,6 +6,7 @@ import gui.GameContext;
 import java.io.*;
 import java.net.InetAddress;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -17,12 +18,10 @@ import java.rmi.registry.Registry;
 public class ClientThread extends MultiPlayEngine {
 
     private InetAddress serverAddr;
-    private IConnectView view;
 
     public ClientThread(InetAddress serverAddr, IConnectView view) throws RemoteException {
         super(view);
         this.serverAddr = serverAddr;
-        this.view = view;
     }
 
     @Override
@@ -31,8 +30,8 @@ public class ClientThread extends MultiPlayEngine {
             view.onConnecting();
             getRemoteEngine(serverAddr);
             if(remoteEngine != null){
-                Registry rr = LocateRegistry.createRegistry(ConnUtil.ENGINE_PORT_CLIENT);
-                rr.bind("remoteEngine", this);
+                rEngine = LocateRegistry.createRegistry(ConnUtil.ENGINE_PORT_CLIENT);
+                rEngine.bind("remoteEngine", this);
                 remoteEngine.getRemoteEngine(GameContext.getHost());
             }
         } catch (IOException e) {
@@ -65,10 +64,5 @@ public class ClientThread extends MultiPlayEngine {
     @Override
     protected int getInfoPortRemote() {
         return ConnUtil.INFO_VIEW_PORT_SERVER;
-    }
-
-    @Override
-    public void close() {
-
     }
 }

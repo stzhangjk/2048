@@ -4,6 +4,7 @@ import entity.Tile;
 import game.GameEngine;
 import game.interfaces.game.IGameEngine;
 import game.interfaces.game.IMultiPlayEngine;
+import game.interfaces.view.IControlView;
 import game.interfaces.view.IGameView;
 import game.interfaces.view.IInfoView;
 import game.interfaces.view.mulitiPlay.IConnectView;
@@ -16,10 +17,7 @@ import java.io.*;
 import java.lang.reflect.Proxy;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.rmi.AlreadyBoundException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -27,10 +25,10 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * Created by STZHANGJK on 2017.2.13.
  */
-public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMultiPlayEngine,Runnable {
+public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMultiPlayEngine,Runnable,IControlView {
 
     private InetAddress remoteAddress;
-    private IConnectView view;
+    protected IConnectView view;
     private IGameEngine localEngine;
     protected IMultiPlayEngine remoteEngine;
     private MultiPlayPanel mpp;
@@ -43,13 +41,18 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
     private IInfoView rInfoView;
     private IInfoView pInfoView;
 
+    /*rmi相关*/
+    protected Registry rEngine;
+    private Registry rGV;
+    private Registry rIV;
+
     public MultiPlayEngine(IConnectView view) throws RemoteException {
         this.view = view;
     }
 
     @Override
     public void send(String message) throws RemoteException {
-        view.showMessage(message);
+        showMessage(message);
         remoteEngine.showMessage(message);
     }
 
@@ -72,6 +75,37 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
             e.printStackTrace();
         } catch (NotBoundException e) {
             e.printStackTrace();
+        }catch (NoSuchObjectException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deConnect() {
+        try {
+            remoteEngine.deConnectFromRemote();
+            deConnectFromRemote();
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deConnectFromRemote() throws RemoteException, NotBoundException {
+        view.onClose();
+        rEngine.unbind("remoteEngine");
+        UnicastRemoteObject.unexportObject(rEngine,false);
+        remoteEngine = null;
+        if(rGV != null){
+            UnicastRemoteObject.unexportObject(rGV,false);
+            rGameView = null;
+        }
+        if(rIV != null){
+            UnicastRemoteObject.unexportObject(rIV,false);
+            rInfoView = null;
         }
     }
 
@@ -80,6 +114,7 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
     protected abstract int getViewPortRemote();
     protected abstract int getInfoPortLocal();
     protected abstract int getInfoPortRemote();
+
 
 
     /**
@@ -130,14 +165,18 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
         lGameView = mpp.getlGameView();
         rGameView = mpp.getrGameView();
         RemoteGameViewProxy rGameViewProxy = new RemoteGameViewProxy(rGameView);
-        Registry rr = LocateRegistry.createRegistry(getViewPortLocal());
-        rr.bind("gameView",rGameViewProxy);
+        if(rGV == null){
+            rGV = LocateRegistry.createRegistry(getViewPortLocal());
+        }
+        rGV.bind("gameView",rGameViewProxy);
 
         lInfoView = mpp.getLInfoView();
         rInfoView = mpp.getRInfoView();
         RemoteInfoViewProxy rInfoViewProxy = new RemoteInfoViewProxy(rInfoView);
-        Registry rrr = LocateRegistry.createRegistry(getInfoPortLocal());
-        rrr.bind("infoView",rInfoViewProxy);
+        if(rIV == null){
+            rIV = LocateRegistry.createRegistry(getInfoPortLocal());
+        }
+        rIV.bind("infoView",rInfoViewProxy);
     }
 
     @Override
@@ -191,7 +230,29 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
         System.out.println("buildConnection");
         localEngine.setGameView(pGameView);
         localEngine.setInfoView(pInfoView);
+        localEngine.setCtlView(this);
         lGameView.setEngine(localEngine);
         lInfoView.setEngine(localEngine);
+    }
+
+    @Override
+    public void end() throws RemoteException {
+        endGame();
+        remoteEngine.endGame();
+    }
+
+    @Override
+    public void endGame() throws RemoteException {
+        SwingUtilities.invokeLater(()->{
+            GameContext.getMainFrame().showView(MainFrame.CONN_PANEL);
+            GameContext.getMainFrame().getContentPane().remove(mpp);
+            mpp = null;
+        });
+        try {
+            rGV.unbind("gameView");
+            rIV.unbind("infoView");
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
     }
 }

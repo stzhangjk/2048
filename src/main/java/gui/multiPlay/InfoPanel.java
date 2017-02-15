@@ -21,6 +21,7 @@ public class InfoPanel extends JPanel implements IInfoView {
     private ScorePanel score;
 
     public InfoPanel() {
+        setBackground(ColorSet.MENU_BACKGROUND);
         Font font = new Font("微软雅黑",Font.PLAIN,20);
         valueBar = new JProgressBar(2,2048);
         valueBar.setForeground(ColorSet.getBGColor(2));
@@ -35,6 +36,8 @@ public class InfoPanel extends JPanel implements IInfoView {
         JLayeredPane valuePane = new JLayeredPane(){
             @Override
             protected void paintComponent(Graphics g) {
+                g.setColor(ColorSet.MENU_BACKGROUND);
+                g.drawRect(0,0,getWidth(),getHeight());
                 RoundRectangle2D.Double rect = new RoundRectangle2D.Double(0,0,getWidth(),getHeight(),20,20);
                 g.setClip(rect);
                 super.paintComponent(g);
@@ -75,7 +78,9 @@ public class InfoPanel extends JPanel implements IInfoView {
 
     @Override
     public void setScore(int score) {
-        this.score.setText(String.valueOf(score));
+        SwingUtilities.invokeLater(()->{
+            this.score.setText(String.valueOf(score));
+        });
     }
 
     @Override
@@ -85,9 +90,11 @@ public class InfoPanel extends JPanel implements IInfoView {
 
     @Override
     public void setMax(int value) {
-        valueBar.setValue(value);
-        this.value.setText(String.valueOf(value));
-        this.value.setForeground(ColorSet.getTextColor(value));
-        valueBar.setForeground(ColorSet.getBGColor(value));
+        SwingUtilities.invokeLater(()->{
+            valueBar.setValue(value);
+            this.value.setText(String.valueOf(value));
+            this.value.setForeground(ColorSet.getTextColor(value));
+            valueBar.setForeground(ColorSet.getBGColor(value));
+        });
     }
 }
