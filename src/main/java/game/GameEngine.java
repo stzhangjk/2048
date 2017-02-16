@@ -53,7 +53,7 @@ public class GameEngine implements IGameEngine {
      */
     private int max;
     /**胜利条件*/
-    private final int WIN_NUM = 8;
+    private final int WIN_NUM = 2048;
     private volatile boolean end;
 
     /**
@@ -383,9 +383,9 @@ public class GameEngine implements IGameEngine {
         if (dead) {
             gameView.gameOver();
         } else if (max == WIN_NUM) {
+            end = true;
             gameView.win();
             ctlView.end();
-            end = true;
         }
     }
 
