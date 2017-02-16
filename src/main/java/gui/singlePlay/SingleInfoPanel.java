@@ -70,6 +70,7 @@ public class SingleInfoPanel extends JPanel implements IInfoView,IControlView {
             SwingUtilities.invokeLater(()->{
                 engine.restart();
                 SingleInfoPanel.this.gamePanel.init(engine.getTiles());
+                SingleInfoPanel.this.gamePanel.validate();
                 SingleInfoPanel.this.gamePanel.repaint();
                 SingleInfoPanel.this.gamePanel.requestFocus();
             });

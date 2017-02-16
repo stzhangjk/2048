@@ -219,6 +219,7 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
         SwingUtilities.invokeLater(()->{
             GameContext.getMainFrame().getContentPane().add(mpp, MainFrame.MULTI_PLAY_PANEL_NAME);
             GameContext.getMainFrame().showView(MainFrame.MULTI_PLAY_PANEL_NAME);
+            mpp.validate();
             mpp.repaint();
             mpp.getrGameView().setFocusable(false);
             mpp.getlGameView().requestFocus();

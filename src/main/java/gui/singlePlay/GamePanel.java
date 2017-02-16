@@ -89,7 +89,7 @@ public class GamePanel extends JPanel implements IGameView{
     @Override
     public void init(Tile[][] tiles) {
         SwingUtilities.invokeLater(()->{
-            removeAll();
+            GamePanel.this.removeAll();
             tilePanels = new TilePanel[tiles.length][tiles.length];
             int width = (getWidth()-(2+tiles.length-1)*GAP)/tiles.length;
             int height = (getHeight()-(2+tiles.length-1)*GAP)/tiles.length;
@@ -99,8 +99,9 @@ public class GamePanel extends JPanel implements IGameView{
                     tilePanels[i][j] = new TilePanel(tiles[i][j].getValue());
                     tilePanels[i][j].setSize(width,height);
                     tilePanels[i][j].setLocation(GAP*(j+1)+width*j,GAP*(i+1)+height*i);
-                    this.add(tilePanels[i][j]);
+                    GamePanel.this.add(tilePanels[i][j]);
                     tilePanels[i][j].validate();
+                    tilePanels[i][j].repaint();
                 }
             }
         });
