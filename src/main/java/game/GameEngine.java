@@ -56,7 +56,7 @@ public class GameEngine implements IGameEngine {
      */
     private int max;
     /**胜利条件*/
-    private final int WIN_NUM = 16;
+    private final int WIN_NUM = 2048;
     private volatile boolean end;
 
     /**
