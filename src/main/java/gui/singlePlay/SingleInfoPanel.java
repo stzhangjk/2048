@@ -69,6 +69,7 @@ public class SingleInfoPanel extends JPanel implements IInfoView,IControlView {
         restart.addActionListener(e->{
             SwingUtilities.invokeLater(()->{
                 engine.restart();
+                setScore(0);
                 SingleInfoPanel.this.gamePanel.init(engine.getTiles());
                 SingleInfoPanel.this.gamePanel.validate();
                 SingleInfoPanel.this.gamePanel.repaint();
@@ -95,6 +96,14 @@ public class SingleInfoPanel extends JPanel implements IInfoView,IControlView {
         add(downPanel);
         add(Box.createVerticalGlue());
         add(Box.createVerticalStrut(10));
+    }
+
+    /**
+     * 初始化
+     * @param maxScore
+     */
+    public void init(int maxScore){
+        best.setText(String.valueOf(maxScore));
     }
 
     /**

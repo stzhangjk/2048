@@ -22,4 +22,5 @@ public interface IGameEngine {
     void setGameView(IGameView view);
     void setInfoView(IInfoView view);
     void setCtlView(IControlView view);
+    int getMaxScore();
 }

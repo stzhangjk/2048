@@ -8,6 +8,7 @@ import game.interfaces.view.IInfoView;
 import gui.animate.AnimateUnit;
 
 import javax.swing.*;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -48,12 +49,14 @@ public class GameEngine implements IGameEngine {
      * 分数
      */
     private int score;
+    /**最大分数*/
+    private int maxScore;
     /**
      * 最大的值
      */
     private int max;
     /**胜利条件*/
-    private final int WIN_NUM = 2048;
+    private final int WIN_NUM = 16;
     private volatile boolean end;
 
     /**
@@ -85,6 +88,7 @@ public class GameEngine implements IGameEngine {
         score = 0;
         max = 0;
         end = false;
+        loadMaxScore();
     }
 
     @Override
@@ -114,6 +118,33 @@ public class GameEngine implements IGameEngine {
      */
     public void restart() {
         initGame();
+    }
+
+    /**
+     * 从/MaxScore.properties文件读取历史最大分数
+     */
+    private void loadMaxScore(){
+
+        try (InputStream in = getClass().getResourceAsStream("/MaxScore.properties")){
+            Properties p = new Properties();
+            p.load(in);
+            maxScore = Integer.parseInt(p.getProperty("max"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 保存最大分数
+     */
+    private void saveScore(){
+        try(OutputStream out = new FileOutputStream(getClass().getResource("/MaxScore.properties").getPath())){
+            Properties p = new Properties();
+            p.put("max",String.valueOf(score));
+            p.store(out,null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -383,11 +414,16 @@ public class GameEngine implements IGameEngine {
         if (dead) {
             gameView.gameOver();
         } else if (max == WIN_NUM) {
+            if(score > maxScore){
+                saveScore();
+            }
             end = true;
             gameView.win();
             ctlView.end();
         }
     }
+
+
 
     /**
      * 移动
@@ -434,6 +470,11 @@ public class GameEngine implements IGameEngine {
     @Override
     public void setCtlView(IControlView ctlView) {
         this.ctlView = ctlView;
+    }
+
+    @Override
+    public int getMaxScore() {
+        return maxScore;
     }
 
     /**

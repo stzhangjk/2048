@@ -3,9 +3,11 @@ package gui;
 import game.GameEngine;
 import game.interfaces.game.IGameEngine;
 import game.interfaces.view.IControlView;
+import game.interfaces.view.IInfoView;
 import game.interfaces.view.IMenuView;
 import gui.multiPlay.ConnectPanel;
 import gui.singlePlay.GamePanel;
+import gui.singlePlay.SingleInfoPanel;
 import gui.singlePlay.SinglePlayPanel;
 import util.ColorSet;
 
@@ -45,15 +47,17 @@ public class MenuPanel extends JPanel implements IMenuView{
             new Thread(()->{
                 SwingUtilities.invokeLater(()->{
                     SinglePlayPanel playPanel = new SinglePlayPanel();
-                    GamePanel gameView = playPanel.getGameView();
                     IGameEngine engine = new GameEngine();
-                    playPanel.getInfoView().setEngine(engine);
+                    GamePanel gameView = playPanel.getGameView();
+                    SingleInfoPanel infoView = playPanel.getInfoView();
+                    infoView.setEngine(engine);
                     gameView.setEngine(engine);
                     engine.setInfoView(playPanel.getInfoView());
                     engine.setGameView(gameView);
                     engine.setCtlView(playPanel.getInfoView());
                     engine.start();
                     gameView.init(engine.getTiles());
+                    infoView.init(engine.getMaxScore());
                     MainFrame frame = GameContext.getMainFrame();
                     frame.getContentPane().add(playPanel,MainFrame.SINGLE_PLAY_PANEL_NAME);
                     frame.showView(MainFrame.SINGLE_PLAY_PANEL_NAME);
@@ -102,8 +106,8 @@ public class MenuPanel extends JPanel implements IMenuView{
         add(singleBox);
         add(Box.createVerticalStrut(10));
         add(multiBox);
-        add(Box.createVerticalStrut(10));
-        add(optionBox);
+        //add(Box.createVerticalStrut(10));
+        //add(optionBox);
         add(Box.createVerticalGlue());
 
         setBackground(ColorSet.MENU_BACKGROUND);
