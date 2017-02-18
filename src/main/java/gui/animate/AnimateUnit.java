@@ -15,6 +15,8 @@ public class AnimateUnit implements Serializable{
     private Tile to;
     /**每帧多少像素*/
     private double step;
+    /**最大速度*/
+    private double vMax;
 
     public AnimateUnit(Tile from, Tile to) {
         this.from = from;
@@ -35,5 +37,13 @@ public class AnimateUnit implements Serializable{
 
     public void setStep(double step) {
         this.step = step;
+    }
+
+    public double getvMax() {
+        return vMax;
+    }
+
+    public void setvMax(double vMax) {
+        this.vMax = vMax;
     }
 }
