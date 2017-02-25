@@ -188,15 +188,13 @@ public class ConnectPanel extends JPanel implements IConnectView {
 
     private void send() {
         try {
-            String str;
             if (multiPlayEngine == null) {
-                str = "请先联机";
+                showMessage("请先联机");
             } else {
-                str = inputTxt.getText();
+                String str = inputTxt.getText();
                 inputTxt.setText("");
                 multiPlayEngine.send(str);
             }
-            showMessage(str);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

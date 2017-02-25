@@ -412,14 +412,16 @@ public class GameEngine implements IGameEngine {
             }
         }
         if (dead) {
+            end = true;
             gameView.gameOver();
+            ctlView.end();
         } else if (max == WIN_NUM) {
-            if(score > maxScore){
-                saveScore();
-            }
             end = true;
             gameView.win();
             ctlView.end();
+        }
+        if(score > maxScore){
+            saveScore();
         }
     }
 

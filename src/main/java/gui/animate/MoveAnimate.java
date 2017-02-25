@@ -30,7 +30,7 @@ public class MoveAnimate {
     /**
      * 动画总时长秒
      */
-    private final double duration = 0.2;
+    private final double duration = 0.1;
     /**
      * 总帧数
      */

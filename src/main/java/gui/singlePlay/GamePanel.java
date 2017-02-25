@@ -154,7 +154,6 @@ public class GamePanel extends JPanel implements IGameView{
     @Override
     public void updateValue(Tile tile) {
         SwingUtilities.invokeLater(()->tilePanels[tile.getI()][tile.getJ()].updateValue(tile.getValue()));
-
     }
 
     @Override

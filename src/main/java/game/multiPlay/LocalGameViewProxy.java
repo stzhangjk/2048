@@ -22,7 +22,8 @@ public class LocalGameViewProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if(method.getName().equals("win")){
             remote.gameOver();
-
+        }else if(method.getName().equals("gameOver")){
+            remote.win();
         }else method.invoke(remote,args);
 
         return method.invoke(local,args);
