@@ -21,17 +21,17 @@ public interface IGameView extends Remote{
      * 播放移动动画
      * @param animateUnits
      */
-    void doMoveAnimate(List<AnimateUnit> animateUnits)throws RemoteException;
+    void doMoveAnimate(List<AnimateUnit> animateUnits,int order)throws RemoteException;
 
     /**
      * 合并
      */
-    int doMergeAnimate(List<AnimateUnit> animateUnits)throws RemoteException;
+    int doMergeAnimate(List<AnimateUnit> animateUnits,int order)throws RemoteException;
 
     /**
      * 更新一个瓦片的值
      */
-    void updateValue(Tile tile)throws RemoteException;
+    void updateValue(Tile tile,int order)throws RemoteException;
 
     /**
      * 死了

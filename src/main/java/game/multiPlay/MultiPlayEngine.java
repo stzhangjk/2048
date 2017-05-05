@@ -85,7 +85,6 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
         try {
             remoteEngine.deConnectFromRemote();
             deConnectFromRemote();
-
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
@@ -182,8 +181,14 @@ public abstract class MultiPlayEngine extends UnicastRemoteObject implements IMu
     @Override
     public void initView(Tile[][] tiles) throws RemoteException {
         System.out.println("initView");
-        lGameView.init(tiles);
-        rGameView.init(tiles);
+        SwingUtilities.invokeLater(()->{
+            try {
+                lGameView.init(tiles);
+                rGameView.init(tiles);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override

@@ -30,7 +30,7 @@ public class MoveAnimate {
     /**
      * 动画总时长秒
      */
-    private final double duration = 0.1;
+    private final double duration = 0.5;
     /**
      * 总帧数
      */
@@ -140,6 +140,19 @@ public class MoveAnimate {
             tileFroms.clear();
             gCopy.dispose();
             g.dispose();
+
+
+            for (AnimateUnit unit : animateUnits) {
+                Tile from = unit.getFrom();
+                Tile to = unit.getTo();
+                to.setValue(from.getValue());
+                from.setValue(0);
+                gamePanel.updateValue(from,-1);
+                gamePanel.updateValue(to,-1);
+            }
+
+            
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

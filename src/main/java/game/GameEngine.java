@@ -12,6 +12,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by STZHANGJK on 2017.1.21.
@@ -171,7 +172,13 @@ public class GameEngine implements IGameEngine {
     private void createTileAndUpdate() throws RemoteException {
         Tile newT = createTile();
         if (newT != null) {
-            gameView.updateValue(newT);
+            SwingUtilities.invokeLater(()->{
+                try {
+                    gameView.updateValue(newT,-1);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
@@ -338,18 +345,19 @@ public class GameEngine implements IGameEngine {
     private void playAnimate() {
         try {
              /*处理数据*/
+            AtomicInteger order = new AtomicInteger();//0
             if (isMove || isMerged) {
                 SwingUtilities.invokeAndWait(() -> {
                     try {
-                        gameView.doMoveAnimate(moveAnimateUnits);
-                        for (AnimateUnit unit : moveAnimateUnits) {
-                            Tile from = unit.getFrom();
-                            Tile to = unit.getTo();
-                            to.setValue(from.getValue());
-                            from.setValue(0);
-                            gameView.updateValue(from);
-                            gameView.updateValue(to);
-                        }
+                        gameView.doMoveAnimate(moveAnimateUnits,order.addAndGet(1));
+//                        for (AnimateUnit unit : moveAnimateUnits) {
+//                            Tile from = unit.getFrom();
+//                            Tile to = unit.getTo();
+//                            to.setValue(from.getValue());
+//                            from.setValue(0);
+//                            gameView.updateValue(from,order.addAndGet(1));
+//                            gameView.updateValue(to,order.addAndGet(1));
+//                        }
                         moveAnimateUnits.clear();
                     } catch (RemoteException e) {
                         e.printStackTrace();
@@ -360,7 +368,7 @@ public class GameEngine implements IGameEngine {
             if (isMerged) {
                 SwingUtilities.invokeAndWait(() -> {
                     try {
-                        int v = gameView.doMergeAnimate(mergeAnimateUnits);
+                        int v = gameView.doMergeAnimate(mergeAnimateUnits,order.addAndGet(1));
                         score += mergeAnimateUnits.size();
                         infoView.setScore(score);
                         if (v > max) {
@@ -376,6 +384,7 @@ public class GameEngine implements IGameEngine {
 
             if (isMerged || isMove) {
                 createTileAndUpdate();
+                System.out.println(order.get());
             }
             judgeDeath();
 
@@ -413,12 +422,24 @@ public class GameEngine implements IGameEngine {
         }
         if (dead) {
             end = true;
-            gameView.gameOver();
-            ctlView.end();
+            SwingUtilities.invokeLater(()->{
+                try {
+                    gameView.gameOver();
+                    ctlView.end();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
         } else if (max == WIN_NUM) {
             end = true;
-            gameView.win();
-            ctlView.end();
+            SwingUtilities.invokeLater(()->{
+                try {
+                    gameView.win();
+                    ctlView.end();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
         }
         if(score > maxScore){
             saveScore();
@@ -452,11 +473,13 @@ public class GameEngine implements IGameEngine {
     }
 
     private AnimateUnit createUnit(Tile from, Tile to) {
-        Tile f = new Tile(from.getI(), from.getJ());
-        f.setValue(from.getValue());
-        Tile t = new Tile(to.getI(), to.getJ());
-        t.setValue(to.getValue());
-        return new AnimateUnit(f, t);
+        AnimateUnit unit = null;
+        try {
+            unit =  new AnimateUnit(from.clone(), to.clone());
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return unit;
     }
 
     @Override

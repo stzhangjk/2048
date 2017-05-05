@@ -118,6 +118,7 @@ public class MenuPanel extends JPanel implements IMenuView{
         }
     }
 
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

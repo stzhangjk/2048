@@ -31,7 +31,7 @@ public class MergeAnimate {
     /**
      * 动画总时长秒
      */
-    private final double duration = 0.3;
+    private final double duration = 0.5;
     /**
      * 总帧数
      */
@@ -92,7 +92,7 @@ public class MergeAnimate {
             from.setValue(0);
             int v = to.getValue() << 1;
             to.setValue(v);
-            gameView.updateValue(to);
+            gameView.updateValue(to,-1);
             max = Math.max(max, v);
             /*保存方块图像*/
             TilePanel t = tilePanels[to.getI()][to.getJ()];
@@ -137,6 +137,7 @@ public class MergeAnimate {
             toBounds.clear();
             gCopy.dispose();
             g.dispose();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -3,6 +3,7 @@ package game.multiPlay;
 import game.interfaces.view.IInfoView;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -19,8 +20,16 @@ public class LocalInfoViewProxy implements InvocationHandler{
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        new Thread(()->{
+            try {
+                method.invoke(remote,args);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }).start();
         method.invoke(local,args);
-        method.invoke(remote,args);
         return null;
     }
 }

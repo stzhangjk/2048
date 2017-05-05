@@ -9,7 +9,7 @@ import java.io.Serializable;
  * Created by STZHANGJK on 2017.1.31.
  * 动画单元
  */
-public class AnimateUnit implements Serializable{
+public class AnimateUnit implements Serializable,Cloneable{
 
     private Tile from;
     private Tile to;
@@ -45,5 +45,15 @@ public class AnimateUnit implements Serializable{
 
     public void setvMax(double vMax) {
         this.vMax = vMax;
+    }
+
+    @Override
+    public AnimateUnit clone() throws CloneNotSupportedException {
+        Tile f = from.clone();
+        Tile t = to.clone();
+        AnimateUnit u = new AnimateUnit(f,t);
+        u.setStep(step);
+        u.setvMax(vMax);
+        return u;
     }
 }

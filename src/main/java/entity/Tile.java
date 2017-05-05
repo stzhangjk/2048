@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by STZHANGJK on 2017.1.21.
  */
-public class Tile implements Serializable{
+public class Tile implements Serializable,Cloneable{
 
     private int i;
     private int j;
@@ -47,5 +47,12 @@ public class Tile implements Serializable{
                 ", j=" + j +
                 ", value=" + value +
                 '}';
+    }
+
+    @Override
+    public Tile clone() throws CloneNotSupportedException {
+        Tile t = new Tile(i,j);
+        t.setValue(value);
+        return t;
     }
 }

@@ -131,9 +131,11 @@ public class GamePanel extends JPanel implements IGameView{
      * @param animateUnits
      */
     @Override
-    public void doMoveAnimate(List<AnimateUnit> animateUnits) {
+    public void doMoveAnimate(List<AnimateUnit> animateUnits,int order) {
         if(animateUnits.size() > 0){
-            new MoveAnimate(this,animateUnits).play();
+//            SwingUtilities.invokeLater(()->{
+                new MoveAnimate(this,animateUnits).play();
+//            });
         }
     }
 
@@ -141,7 +143,7 @@ public class GamePanel extends JPanel implements IGameView{
      * 合并效果
      */
     @Override
-    public int doMergeAnimate(List<AnimateUnit> animateUnits) {
+    public int doMergeAnimate(List<AnimateUnit> animateUnits,int order) {
         if(animateUnits.size() > 0) {
             return new MergeAnimate(this, animateUnits).play();
         }else return 0;
@@ -152,26 +154,19 @@ public class GamePanel extends JPanel implements IGameView{
      * @param tile
      */
     @Override
-    public void updateValue(Tile tile) {
-        SwingUtilities.invokeLater(()->tilePanels[tile.getI()][tile.getJ()].updateValue(tile.getValue()));
+    public void updateValue(Tile tile,int order) {
+        tilePanels[tile.getI()][tile.getJ()].updateValue(tile.getValue());
+        revalidate();
     }
 
     @Override
     public void gameOver() {
-        SwingUtilities.invokeLater(()->JOptionPane.showMessageDialog(GameContext.getMainFrame(),"哈哈，你输了！","游戏结束",JOptionPane.WARNING_MESSAGE));
+        JOptionPane.showMessageDialog(GameContext.getMainFrame(),"哈哈，你输了！","游戏结束",JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
     public void win() throws RemoteException {
-        try {
-            SwingUtilities.invokeAndWait(()->{
-                JOptionPane.showMessageDialog(GameContext.getMainFrame(),"恭喜！你赢了！","游戏结束",JOptionPane.WARNING_MESSAGE);
-            });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        JOptionPane.showMessageDialog(GameContext.getMainFrame(),"恭喜！你赢了！","游戏结束",JOptionPane.WARNING_MESSAGE);
     }
 
 
