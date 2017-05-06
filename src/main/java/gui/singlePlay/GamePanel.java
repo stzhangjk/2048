@@ -156,7 +156,7 @@ public class GamePanel extends JPanel implements IGameView{
     @Override
     public void updateValue(Tile tile,int order) {
         tilePanels[tile.getI()][tile.getJ()].updateValue(tile.getValue());
-        revalidate();
+        repaint();
     }
 
     @Override

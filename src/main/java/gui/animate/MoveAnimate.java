@@ -151,7 +151,7 @@ public class MoveAnimate {
                 gamePanel.updateValue(to,-1);
             }
 
-            
+
 
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -44,6 +44,7 @@ public class TilePanel extends JPanel {
         Color color = ColorSet.getBGColor(value);
         setBackground(color);
         middleRow.setBackground(color);
+        repaint();
     }
 
     @Override

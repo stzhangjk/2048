@@ -46,7 +46,7 @@ public class RemoteGameViewProxy extends UnicastRemoteObject implements IGameVie
                     }else{
                         RemoteGameViewProxy.order++;
                     }
-                    System.out.println(RemoteGameViewProxy.order);
+//                    System.out.println(RemoteGameViewProxy.order);
                     gameView.notifyAll();
                     break;
                 }else{
@@ -88,7 +88,7 @@ public class RemoteGameViewProxy extends UnicastRemoteObject implements IGameVie
                     gameView.doMoveAnimate(animateUnits, -1);
 
                     RemoteGameViewProxy.order++;
-                    System.out.println(RemoteGameViewProxy.order);
+//                    System.out.println(RemoteGameViewProxy.order);
                     gameView.notifyAll();
                     break;
                 } else {
@@ -111,7 +111,7 @@ public class RemoteGameViewProxy extends UnicastRemoteObject implements IGameVie
                     gameView.doMergeAnimate(animateUnits, -1);
 
                     RemoteGameViewProxy.order++;
-                    System.out.println(RemoteGameViewProxy.order);
+//                    System.out.println(RemoteGameViewProxy.order);
                     gameView.notifyAll();
                     break;
                 } else {
